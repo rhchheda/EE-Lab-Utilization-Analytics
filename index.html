@@ -1,0 +1,699 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <title>EE Lab Utilization Analytics | KLE-CTIE · Tech Prowess</title>
+  <!-- Fonts & styles matching the refined dashboard language -->
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      font-family: 'Outfit', sans-serif;
+      background: #f4f7fc;
+      color: #0d1b3e;
+      padding-bottom: 2rem;
+    }
+    /* header - matching funnel report elegance */
+    .dashboard-header {
+      background: #0d1b3e;
+      padding: 1.8rem 2rem 1.5rem;
+      position: relative;
+      overflow: hidden;
+      border-bottom: 1px solid rgba(201,168,76,0.3);
+    }
+    .dashboard-header::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image: linear-gradient(rgba(201,168,76,0.05) 1px, transparent 1px),
+                        linear-gradient(90deg, rgba(201,168,76,0.05) 1px, transparent 1px);
+      background-size: 48px 48px;
+      pointer-events: none;
+    }
+    .header-inner {
+      max-width: 1300px;
+      margin: 0 auto;
+      position: relative;
+      z-index: 2;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+    .header-left .eyebrow {
+      font-size: 11px;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: #c9a84c;
+      margin-bottom: 0.5rem;
+    }
+    .header-left h1 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(28px, 5vw, 48px);
+      font-weight: 600;
+      color: white;
+      line-height: 1.1;
+    }
+    .header-left h1 span {
+      color: #c9a84c;
+      font-style: italic;
+    }
+    .gold-bar {
+      height: 3px;
+      background: linear-gradient(to right, #c9a84c, #e8c97a, #c9a84c);
+      max-width: 240px;
+      margin-top: 0.5rem;
+      border-radius: 2px;
+    }
+    .live-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(44,155,110,0.2);
+      border: 1px solid rgba(44,155,110,0.5);
+      border-radius: 40px;
+      padding: 5px 12px;
+      margin-top: 8px;
+    }
+    .live-dot {
+      width: 8px;
+      height: 8px;
+      background: #2ecc71;
+      border-radius: 50%;
+      animation: pulse 1.8s infinite;
+    }
+    @keyframes pulse { 0% { opacity: 0.4; } 50% { opacity: 1; } 100% { opacity: 0.4; } }
+    .live-text {
+      font-size: 10px;
+      font-weight: 500;
+      color: #2ecc71;
+      letter-spacing: 0.5px;
+    }
+    .header-right .timestamp {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      color: rgba(255,255,255,0.5);
+      background: rgba(0,0,0,0.3);
+      padding: 6px 12px;
+      border-radius: 40px;
+    }
+    /* container */
+    .container {
+      max-width: 1300px;
+      margin: 2rem auto;
+      padding: 0 1.5rem;
+    }
+    /* filter panel */
+    .filter-card {
+      background: white;
+      border-radius: 24px;
+      padding: 1.2rem 1.5rem;
+      margin-bottom: 2rem;
+      box-shadow: 0 6px 14px rgba(13,27,62,0.06);
+      border: 1px solid #e2edf2;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      align-items: flex-end;
+    }
+    .filter-group {
+      flex: 1;
+      min-width: 140px;
+    }
+    .filter-group label {
+      font-size: 10px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: #5e7b8c;
+      display: block;
+      margin-bottom: 6px;
+    }
+    select, input {
+      width: 100%;
+      padding: 8px 12px;
+      border-radius: 14px;
+      border: 1px solid #cfdfe8;
+      background: white;
+      font-family: 'Outfit', sans-serif;
+      font-size: 0.8rem;
+      font-weight: 500;
+      color: #0d1b3e;
+      outline: none;
+      transition: 0.2s;
+    }
+    select:focus, input:focus {
+      border-color: #c9a84c;
+      box-shadow: 0 0 0 3px rgba(201,168,76,0.2);
+    }
+    .btn-reset {
+      background: #f0f3f6;
+      border: none;
+      padding: 8px 20px;
+      border-radius: 40px;
+      font-weight: 600;
+      font-size: 0.75rem;
+      cursor: pointer;
+      font-family: 'Outfit', sans-serif;
+      transition: 0.2s;
+    }
+    .btn-reset:hover {
+      background: #e2e9ef;
+    }
+    /* KPI */
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+    .kpi-card {
+      background: white;
+      border-radius: 20px;
+      padding: 1.2rem;
+      text-align: center;
+      border: 1px solid #e2edf2;
+      box-shadow: 0 6px 12px rgba(0,0,0,0.03);
+      transition: transform 0.2s;
+    }
+    .kpi-card:hover { transform: translateY(-3px); }
+    .kpi-value {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 2.5rem;
+      font-weight: 700;
+      color: #0d1b3e;
+      line-height: 1;
+    }
+    .kpi-label {
+      font-size: 0.7rem;
+      font-weight: 600;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      color: #6b7a99;
+      margin-top: 8px;
+    }
+    /* charts double column */
+    .grid-2col {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 2rem;
+    }
+    .chart-card {
+      background: white;
+      border-radius: 24px;
+      padding: 1.2rem;
+      border: 1px solid #e2edf2;
+      box-shadow: 0 4px 10px rgba(13,27,62,0.05);
+    }
+    .chart-title {
+      font-weight: 700;
+      font-size: 1rem;
+      border-left: 4px solid #c9a84c;
+      padding-left: 12px;
+      margin-bottom: 1.2rem;
+      color: #1e3a4a;
+    }
+    .bar-list {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+    .bar-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.75rem;
+    }
+    .bar-label {
+      width: 110px;
+      font-weight: 600;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      color: #2c3e50;
+    }
+    .bar-track {
+      flex: 1;
+      height: 28px;
+      background: #edf2f6;
+      border-radius: 40px;
+      overflow: hidden;
+    }
+    .bar-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #c9a84c, #e0bc6e);
+      width: 0%;
+      border-radius: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      padding-right: 8px;
+      color: #0d1b3e;
+      font-weight: 700;
+      font-size: 0.7rem;
+      transition: width 0.6s cubic-bezier(0.2,0.9,0.4,1.1);
+    }
+    .perc-value {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.7rem;
+      font-weight: 500;
+      color: #3d5a6c;
+      min-width: 45px;
+      text-align: right;
+    }
+    .table-wrapper {
+      overflow-x: auto;
+      background: white;
+      border-radius: 20px;
+      border: 1px solid #e2edf2;
+      margin-top: 0.5rem;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.75rem;
+    }
+    th {
+      background: #f0f5f9;
+      padding: 12px 12px;
+      text-align: left;
+      font-weight: 700;
+      color: #1c4e66;
+    }
+    td {
+      padding: 10px 12px;
+      border-bottom: 1px solid #eef2f7;
+    }
+    .startup-badge {
+      background: #e2f0e8;
+      color: #1f6e4a;
+      padding: 3px 10px;
+      border-radius: 30px;
+      font-weight: 600;
+      font-size: 0.7rem;
+      display: inline-block;
+    }
+    .equip-pill {
+      background: #e9edf2;
+      padding: 3px 8px;
+      border-radius: 20px;
+      font-size: 0.7rem;
+    }
+    .footnote {
+      font-size: 0.7rem;
+      color: #6f8ea3;
+      text-align: center;
+      margin-top: 1.8rem;
+    }
+    .loading-placeholder {
+      text-align: center;
+      padding: 2rem;
+      color: #c9a84c;
+      font-weight: 500;
+    }
+    @media (max-width: 700px) {
+      .bar-label { width: 90px; }
+      .container { padding: 0 1rem; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="dashboard-header">
+  <div class="header-inner">
+    <div class="header-left">
+      <div class="eyebrow">EE LAB · KLE-CTIE × </div>
+      <h1>Utilization <span>Analytics</span></h1>
+      <div class="gold-bar"></div>
+      <div class="live-badge"><div class="live-dot"></div><span class="live-text">LIVE Report</span></div>
+    </div>
+    <div class="header-right">
+      <div class="timestamp" id="lastUpdated">⏳ fetching data...</div>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+  <!-- Filters -->
+  <div class="filter-card">
+    <div class="filter-group"><label>📆 Year</label><select id="yearFilter"></select></div>
+    <div class="filter-group"><label>🗓️ Month</label><select id="monthFilter"></select></div>
+    <div class="filter-group"><label>🚀 Startup</label><select id="startupFilter"></select></div>
+    <div class="filter-group"><label>🔧 Equipment</label><input type="text" id="equipFilter" placeholder="e.g., DSO, MSO, PSU"></div>
+    <button class="btn-reset" id="resetBtn">⟳ Reset Filters</button>
+  </div>
+
+  <!-- KPI Row -->
+  <div class="kpi-grid" id="kpiGrid">
+    <div class="kpi-card"><div class="kpi-value">—</div><div class="kpi-label">Total Sessions</div></div>
+    <div class="kpi-card"><div class="kpi-value">—</div><div class="kpi-label">Total Hours</div></div>
+    <div class="kpi-card"><div class="kpi-value">—</div><div class="kpi-label">Active Startups</div></div>
+    <div class="kpi-card"><div class="kpi-value">—</div><div class="kpi-label">Utilization (avg %)</div></div>
+  </div>
+
+  <!-- Charts: Monthly hours, Startup hours -->
+  <div class="grid-2col">
+    <div class="chart-card"><div class="chart-title">📅 Monthly Utilization (hours)</div><div class="bar-list" id="monthlyChart"></div></div>
+    <div class="chart-card"><div class="chart-title">🏢 Startup-wise Total Hours</div><div class="bar-list" id="startupChart"></div></div>
+  </div>
+  <div class="grid-2col">
+    <div class="chart-card"><div class="chart-title">⚙️ Equipment Usage (Top)</div><div class="bar-list" id="equipmentChart"></div></div>
+    <div class="chart-card"><div class="chart-title">📈 Year-over-Year Trend</div><div class="bar-list" id="yearlyChart"></div></div>
+  </div>
+
+  <!-- Detailed table -->
+  <div class="chart-card" style="padding:0; overflow:hidden;">
+    <div style="padding: 1.2rem 1.2rem 0;"><div class="chart-title" style="margin-bottom:0;">📋 Session Logs (filtered)</div></div>
+    <div class="table-wrapper">
+      <table id="sessionsTable">
+        <thead><tr><th>Date</th><th>Startup</th><th>Rep</th><th>Equipment Used</th><th>Tested What</th><th>Usage (hrs)</th></tr></thead>
+        <tbody id="tableBody"><tr><td colspan="6" class="loading-placeholder">Loading records from Google Sheet...</td></tr></tbody>
+      </table>
+    </div>
+  </div>
+  <div class="footnote">* Utilization hours computed from In-Time/Out-Time durations. Percentage utilization = (total hours used / total available lab hours in period) based on 8h/day weekdays. Data from EE Lab reports (Oct 2022 – Dec 2024).</div>
+</div>
+
+<script>
+  // ------------------------------------------------------------------
+  // CONFIGURATION: REPLACE WITH YOUR ACTUAL GAS WEB APP URL
+  // The GAS script must output JSON: { ok: true, records: [ {...} ] }
+  // each record includes fields: Date, "Startup Name", "Rep Name", "Equipment Used", "Tested What", "UsageHours"
+  // ------------------------------------------------------------------
+  const GAS_URL = "https://script.google.com/macros/s/AKfycby9xVEAyspOWf5b5ecKWN5eJw9dPHkMO85jEyLXWOcdVtJc0VQv5PSn3HVL357b8e183w/exec";
+  
+  let masterData = [];       // array of sessions with usage hours, dateObj, year, month, startup normalized
+  let filteredData = [];
+
+  // DOM elements
+  const yearSelect = document.getElementById('yearFilter');
+  const monthSelect = document.getElementById('monthFilter');
+  const startupSelect = document.getElementById('startupFilter');
+  const equipInput = document.getElementById('equipFilter');
+  const resetBtn = document.getElementById('resetBtn');
+
+  // Helper: time string "HH:MM:SS" or "HH:MM" to decimal hours
+  function timeToDecimal(t) {
+    if (!t || typeof t !== 'string') return 0;
+    let parts = t.split(':');
+    if (parts.length >= 2) {
+      let h = parseInt(parts[0],10);
+      let m = parseInt(parts[1],10);
+      if (isNaN(h)) return 0;
+      return h + m/60;
+    }
+    return 0;
+  }
+
+  // Convert raw records from GAS -> enriched session
+  function enrichRecords(records) {
+    return records.map(rec => {
+      let usage = rec.UsageHours;
+      if (usage === undefined || usage === null || usage === 0) {
+        let inTime = rec['In-Time'] || rec.InTime;
+        let outTime = rec['Out-Time'] || rec.OutTime;
+        if (inTime && outTime) {
+          usage = Math.max(0, timeToDecimal(outTime) - timeToDecimal(inTime));
+        } else usage = 0;
+      }
+      let dateRaw = rec.Date || rec["Date"];
+      let dateObj = null;
+      let year = '', month = '', monthName = '';
+      if (dateRaw) {
+        try {
+          let d = new Date(dateRaw);
+          if (!isNaN(d.getTime())) {
+            dateObj = d;
+            year = d.getFullYear().toString();
+            month = (d.getMonth() + 1).toString();
+            monthName = d.toLocaleString('default', { month: 'short' });
+          } else if (typeof dateRaw === 'string' && dateRaw.includes('-')) {
+            let parts = dateRaw.split('-');
+            if (parts.length >= 2) { year = parts[0]; month = parts[1]; monthName = new Date(year, month-1, 1).toLocaleString('default', { month: 'short' }); }
+          }
+        } catch(e) { console.warn(e); }
+      }
+      let startup = rec["Startup Name"] || rec.StartupName || rec["Start-Up Name"] || "Unknown";
+      let rep = rec["Start-Up Rep Name"] || rec.RepName || rec["Rep Name"] || "";
+      let equipment = rec["Equipment Used"] || rec.Equipment || "";
+      let testedWhat = rec["Tested What"] || rec.TestedWhat || "";
+      return {
+        ...rec,
+        usageHours: typeof usage === 'number' ? usage : parseFloat(usage) || 0,
+        dateObj, year, month, monthName,
+        startup: startup.trim(),
+        repName: rep,
+        equipment: equipment,
+        testedWhat: testedWhat,
+        originalDate: dateRaw
+      };
+    }).filter(s => s.usageHours > 0 || (s.usageHours === 0 && s.equipment)); // keep zero usage but still record
+  }
+
+  // fetch and initialize dashboard
+  async function loadFromSheet() {
+    try {
+      document.getElementById('lastUpdated').innerText = '⏳ connecting to sheet...';
+      const res = await fetch(GAS_URL);
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const json = await res.json();
+      if (!json.ok) throw new Error(json.error || 'GAS response error');
+      let records = json.records || [];
+      if (!records.length) throw new Error('No records found in sheet response');
+      
+      masterData = enrichRecords(records);
+      // update last updated time
+      const now = new Date();
+      document.getElementById('lastUpdated').innerHTML = `🕒 ${now.toLocaleString()}`;
+      
+      // populate dynamic filters
+      populateFilters(masterData);
+      applyFiltersAndRender();
+    } catch (err) {
+      console.error(err);
+      document.getElementById('lastUpdated').innerText = '⚠️ Failed to load data';
+      document.getElementById('tableBody').innerHTML = `<tr><td colspan="6" style="color:#c0392b;">Error loading: ${err.message}. Check GAS URL or CORS.</td></tr>`;
+      // show fallback for kpi
+      ['kpiGrid','monthlyChart','startupChart','equipmentChart','yearlyChart'].forEach(id => {
+        let el = document.getElementById(id);
+        if(el) el.innerHTML = '<div class="loading-placeholder">Unable to fetch data. Verify GAS deployment.</div>';
+      });
+    }
+  }
+
+  function populateFilters(data) {
+    let yearsSet = new Set();
+    let monthsSet = new Set();
+    let startupsSet = new Set();
+    data.forEach(s => {
+      if (s.year) yearsSet.add(s.year);
+      if (s.monthName && s.year) monthsSet.add(`${s.year}-${s.month}`);
+      if (s.startup) startupsSet.add(s.startup);
+    });
+    let sortedYears = Array.from(yearsSet).sort();
+    yearSelect.innerHTML = '<option value="ALL">All Years</option>' + sortedYears.map(y => `<option value="${y}">${y}</option>`).join('');
+    
+    // month filter: show month names + year
+    let monthOptions = Array.from(monthsSet).sort().map(m => {
+      let [year, mon] = m.split('-');
+      let monName = new Date(parseInt(year), parseInt(mon)-1,1).toLocaleString('default',{month:'short'});
+      return `<option value="${year}-${mon}">${monName} ${year}</option>`;
+    });
+    monthSelect.innerHTML = '<option value="ALL">All Months</option>' + monthOptions.join('');
+    
+    let sortedStartups = Array.from(startupsSet).sort();
+    startupSelect.innerHTML = '<option value="ALL">All Startups</option>' + sortedStartups.map(s => `<option value="${s}">${s}</option>`).join('');
+  }
+
+  function applyFiltersAndRender() {
+    const yearVal = yearSelect.value;
+    const monthVal = monthSelect.value;  // format "YYYY-M" or "ALL"
+    const startupVal = startupFilter.value;
+    const equipKeyword = equipInput.value.trim().toLowerCase();
+    
+    filteredData = masterData.filter(session => {
+      if (yearVal !== 'ALL' && session.year !== yearVal) return false;
+      if (monthVal !== 'ALL') {
+        let [y, m] = monthVal.split('-');
+        if (session.year !== y || session.month !== m) return false;
+      }
+      if (startupVal !== 'ALL' && session.startup !== startupVal) return false;
+      if (equipKeyword && !session.equipment.toLowerCase().includes(equipKeyword)) return false;
+      return true;
+    });
+    
+    renderKPIs(filteredData);
+    renderMonthlyChart(filteredData);
+    renderStartupChart(filteredData);
+    renderEquipmentChart(filteredData);
+    renderYearlyTrend(filteredData);
+    renderTable(filteredData);
+  }
+  
+  function renderKPIs(data) {
+    let totalSessions = data.length;
+    let totalHours = data.reduce((sum, s) => sum + s.usageHours, 0);
+    let uniqueStartups = new Set(data.map(s => s.startup)).size;
+    // estimated utilization %: based on total possible hours in selected period (assume 8h per working day * weekdays ~ 22 days per month)
+    let possibleHours = 0;
+    if (data.length) {
+      let monthsSet = new Set();
+      data.forEach(s => { if(s.year && s.month) monthsSet.add(`${s.year}-${s.month}`); });
+      monthsSet.forEach(ym => {
+        let [y, m] = ym.split('-');
+        let daysInMonth = new Date(parseInt(y), parseInt(m), 0).getDate();
+        let weekdays = 0;
+        for(let d=1; d<=daysInMonth; d++) {
+          let day = new Date(parseInt(y), parseInt(m)-1, d).getDay();
+          if(day !== 0 && day !== 6) weekdays++;
+        }
+        possibleHours += weekdays * 8;
+      });
+    } else possibleHours = 1;
+    let avgUtilPct = possibleHours > 0 ? (totalHours / possibleHours) * 100 : 0;
+    document.getElementById('kpiGrid').innerHTML = `
+      <div class="kpi-card"><div class="kpi-value">${totalSessions}</div><div class="kpi-label">Total Sessions</div></div>
+      <div class="kpi-card"><div class="kpi-value">${totalHours.toFixed(1)}h</div><div class="kpi-label">Total Hours</div></div>
+      <div class="kpi-card"><div class="kpi-value">${uniqueStartups}</div><div class="kpi-label">Active Startups</div></div>
+      <div class="kpi-card"><div class="kpi-value">${avgUtilPct.toFixed(1)}%</div><div class="kpi-label">Utilization (avg %)</div></div>
+    `;
+  }
+  
+  function renderMonthlyChart(data) {
+    let monthMap = new Map(); // key: year-month label
+    data.forEach(s => {
+      if (s.year && s.month) {
+        let key = `${s.year}-${s.month}`;
+        let label = s.monthName ? `${s.monthName} ${s.year}` : key;
+        let existing = monthMap.get(key) || { label, hours: 0 };
+        existing.hours += s.usageHours;
+        monthMap.set(key, existing);
+      }
+    });
+    let sorted = Array.from(monthMap.values()).sort((a,b) => a.label.localeCompare(b.label));
+    let maxHours = Math.max(...sorted.map(v=>v.hours), 1);
+    let html = sorted.map(item => {
+      let width = (item.hours / maxHours) * 100;
+      return `<div class="bar-item">
+        <span class="bar-label">${item.label}</span>
+        <div class="bar-track"><div class="bar-fill" style="width: ${width}%;">${item.hours.toFixed(1)}h</div></div>
+        <span class="perc-value">${((item.hours / (maxHours||1))*100).toFixed(0)}%</span>
+      </div>`;
+    }).join('');
+    if(!html) html = '<div class="loading-placeholder">No monthly data in filter</div>';
+    document.getElementById('monthlyChart').innerHTML = html;
+  }
+  
+  function renderStartupChart(data) {
+    let startupMap = new Map();
+    data.forEach(s => {
+      let name = s.startup;
+      if (!name) return;
+      startupMap.set(name, (startupMap.get(name) || 0) + s.usageHours);
+    });
+    let sorted = Array.from(startupMap.entries()).sort((a,b) => b[1] - a[1]).slice(0,8);
+    let maxVal = sorted.length ? sorted[0][1] : 1;
+    let html = sorted.map(([name, hrs]) => {
+      let width = (hrs / maxVal) * 100;
+      return `<div class="bar-item">
+        <span class="bar-label" title="${name}">${name.slice(0,20)}</span>
+        <div class="bar-track"><div class="bar-fill" style="width: ${width}%;">${hrs.toFixed(1)}h</div></div>
+        <span class="perc-value">${((hrs/maxVal)*100).toFixed(0)}%</span>
+      </div>`;
+    }).join('');
+    if(!html) html = '<div class="loading-placeholder">—</div>';
+    document.getElementById('startupChart').innerHTML = html;
+  }
+  
+  function renderEquipmentChart(data) {
+    let equipMap = new Map();
+    data.forEach(s => {
+      let eq = s.equipment;
+      if (!eq) return;
+      // split multiple equipments like "MSO, DMM"
+      let parts = eq.split(/[,+]/).map(p => p.trim());
+      parts.forEach(p => {
+        if(p.length > 2) equipMap.set(p, (equipMap.get(p) || 0) + s.usageHours);
+      });
+    });
+    let sorted = Array.from(equipMap.entries()).sort((a,b) => b[1] - a[1]).slice(0,7);
+    let maxEq = sorted.length ? sorted[0][1] : 1;
+    let html = sorted.map(([eq, hrs]) => {
+      let width = (hrs / maxEq) * 100;
+      return `<div class="bar-item">
+        <span class="bar-label">${eq.substring(0,22)}</span>
+        <div class="bar-track"><div class="bar-fill" style="width: ${width}%;">${hrs.toFixed(1)}h</div></div>
+        <span class="perc-value">${((hrs/maxEq)*100).toFixed(0)}%</span>
+      </div>`;
+    }).join('');
+    if(!html) html = '<div class="loading-placeholder">No equipment data</div>';
+    document.getElementById('equipmentChart').innerHTML = html;
+  }
+  
+  function renderYearlyTrend(data) {
+    let yearMap = new Map();
+    data.forEach(s => {
+      if (s.year) yearMap.set(s.year, (yearMap.get(s.year) || 0) + s.usageHours);
+    });
+    let sortedYears = Array.from(yearMap.keys()).sort();
+    let maxYear = Math.max(...Array.from(yearMap.values()),1);
+    let html = sortedYears.map(yr => {
+      let hrs = yearMap.get(yr);
+      let width = (hrs / maxYear) * 100;
+      return `<div class="bar-item">
+        <span class="bar-label">${yr}</span>
+        <div class="bar-track"><div class="bar-fill" style="width: ${width}%;">${hrs.toFixed(1)}h</div></div>
+        <span class="perc-value">${((hrs/maxYear)*100).toFixed(0)}%</span>
+      </div>`;
+    }).join('');
+    if(!html) html = '<div class="loading-placeholder">No yearly aggregation</div>';
+    document.getElementById('yearlyChart').innerHTML = html;
+  }
+  
+  function renderTable(data) {
+    let tbody = document.getElementById('tableBody');
+    if(!data.length){
+      tbody.innerHTML = '<tr><td colspan="6" class="loading-placeholder">No sessions match filters</td></tr>';
+      return;
+    }
+    let rows = data.slice(0, 200).map(s => {
+      let dateStr = s.originalDate ? new Date(s.originalDate).toLocaleDateString() : (s.dateObj ? s.dateObj.toLocaleDateString() : s.year);
+      return `<tr>
+        <td>${dateStr || s.year || '-'}</td>
+        <td><span class="startup-badge">${escapeHtml(s.startup)}</span></td>
+        <td>${escapeHtml(s.repName || '-')}</td>
+        <td><span class="equip-pill">${escapeHtml(s.equipment?.substring(0,50) || '-')}</span></td>
+        <td>${escapeHtml(s.testedWhat?.substring(0,45) || '-')}</td>
+        <td class="perc-highlight">${s.usageHours.toFixed(2)} h</td>
+      </tr>`;
+    }).join('');
+    tbody.innerHTML = rows;
+  }
+  
+  function escapeHtml(str) { if(!str) return ''; return str.replace(/[&<>]/g, function(m){ if(m === '&') return '&amp;'; if(m === '<') return '&lt;'; if(m === '>') return '&gt;'; return m;});}
+  
+  // event listeners
+  yearSelect.addEventListener('change', applyFiltersAndRender);
+  monthSelect.addEventListener('change', applyFiltersAndRender);
+  startupFilter.addEventListener('change', applyFiltersAndRender);
+  equipInput.addEventListener('input', applyFiltersAndRender);
+  resetBtn.addEventListener('click', () => {
+    yearSelect.value = 'ALL';
+    monthSelect.value = 'ALL';
+    startupFilter.value = 'ALL';
+    equipInput.value = '';
+    applyFiltersAndRender();
+  });
+  
+  // initialize
+  loadFromSheet();
+</script>
+</body>
+</html>
