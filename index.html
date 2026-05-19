@@ -460,7 +460,7 @@
   // fetch and initialize dashboard
   async function loadFromSheet() {
     try {
-      document.getElementById('lastUpdated').innerText = '⏳ connecting to sheet...';
+      document.getElementById('lastUpdated').innerText = '⏳ connecting to EE Lab-Reports...';
       const res = await fetch(GAS_URL);
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const json = await res.json();
