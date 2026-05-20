@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 <title>EE Lab Utilization Dashboard · KLE-CTIE</title>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=Outfit:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
@@ -106,20 +106,31 @@ section{margin-bottom:3rem;}
 .search-input{flex:1;min-width:200px;border:1px solid var(--border);border-radius:10px;padding:7px 12px;font-size:12px;font-family:'Outfit',sans-serif;outline:none;color:var(--text);background:var(--cream);}
 .search-input:focus{border-color:var(--gold);}
 .table-count{font-size:12px;color:var(--muted);white-space:nowrap;}
+.rows-per-page{display:flex;align-items:center;gap:6px;}
+.rows-per-page select{padding:4px 8px;border-radius:8px;border:1px solid var(--border);font-size:11px;background:white;}
+
+/* Pagination */
+.pagination-controls{display:flex;align-items:center;justify-content:space-between;padding:0.9rem 1.25rem;background:#f8f9fa;border-top:1px solid var(--border);flex-wrap:wrap;gap:10px;}
+.pagination-buttons{display:flex;gap:6px;flex-wrap:wrap;}
+.pagination-btn{padding:5px 12px;border-radius:20px;border:1px solid var(--border);background:white;font-size:11px;font-weight:500;cursor:pointer;font-family:'Outfit',sans-serif;transition:0.2s;}
+.pagination-btn.active{background:var(--navy);color:var(--gold);border-color:var(--navy);}
+.pagination-btn:hover:not(.active){border-color:var(--gold);background:var(--gold-pale);}
+.pagination-btn:disabled{opacity:0.4;cursor:not-allowed;}
+.pagination-info{font-size:11px;color:var(--muted);}
+.table-container{max-height:500px;overflow-y:auto;overflow-x:auto;}
 table{width:100%;border-collapse:collapse;font-size:12px;}
-thead th{background:var(--navy);color:rgba(255,255,255,0.65);font-size:10px;font-weight:500;letter-spacing:0.07em;text-transform:uppercase;padding:10px 12px;text-align:left;}
+thead th{background:var(--navy);color:rgba(255,255,255,0.65);font-size:10px;font-weight:500;letter-spacing:0.07em;text-transform:uppercase;padding:10px 12px;text-align:left;position:sticky;top:0;z-index:10;}
 tbody tr{border-bottom:1px solid var(--border);transition:background 0.15s;}
 tbody tr:hover{background:var(--cream);}
 td{padding:9px 12px;vertical-align:middle;}
 .startup-badge{background:var(--gold-pale);color:var(--navy);padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600;display:inline-block;}
 .equip-pill{background:#eef2f5;padding:2px 8px;border-radius:16px;font-size:10px;color:var(--muted);}
+.scroll-hint{font-size:10px;color:var(--muted);text-align:right;padding:0 1.25rem 0.5rem;}
 
-/* REVEAL ANIMATION */
+/* REVEAL */
 .reveal{opacity:0;transform:translateY(20px);transition:opacity 0.6s ease,transform 0.6s ease;}
 .reveal.vis{opacity:1;transform:translateY(0);}
-
-/* LOADING STATE */
-.loading{text-align:center;padding:3rem;color:var(--muted);font-family:'Outfit',sans-serif;}
+.loading{text-align:center;padding:3rem;color:var(--muted);}
 
 @media(max-width:768px){
   .container{padding:1rem;}
@@ -135,24 +146,22 @@ td{padding:9px 12px;vertical-align:middle;}
   <span>Made with ❤ ~rhc &nbsp;<b>·</b>&nbsp; EE Lab, KLE-CTIE &nbsp;<b>·</b>&nbsp; EE Lab Utilization Report</span>
 </div>
 
-<!-- HEADER -->
 <div class="header">
   <div class="header-inner">
     <div class="header-left">
       <div class="eyebrow">EE LAB · KLE-CTIE · Utilization Analytics</div>
       <div class="header-title">EE Lab <span>Utilization</span><br>Dashboard</div>
-      <div class="header-sub">Equipment usage · Startup-wise trends · Monthly utilization · 2022–2024</div>
+      <div class="header-sub">Equipment usage · Startup-wise trends · Monthly utilization · 2022–2025</div>
       <div class="gold-bar"></div>
     </div>
     <div class="header-right">
       <div class="header-ts">Last updated<br><span id="lastUpdated">—</span></div>
-      <div class="live-badge"><div class="live-dot"></div><span class="live-text">LIVE DATA</span></div>
+      <div class="live-badge"><div class="live-dot"></div><span class="live-text" id="liveModeLabel">DEMO MODE</span></div>
     </div>
   </div>
 </div>
 
 <div class="container">
-  <!-- FILTER BAR -->
   <div class="filter-bar reveal">
     <div class="filter-group"><label>📅 Year</label><select id="yearFilter"></select></div>
     <div class="filter-group"><label>🗓️ Month</label><select id="monthFilter"></select></div>
@@ -161,64 +170,101 @@ td{padding:9px 12px;vertical-align:middle;}
     <button class="reset-btn" id="resetBtn">⟳ Reset</button>
   </div>
 
-  <!-- KPI CARDS -->
-  <div class="kpi-grid reveal" id="kpiGrid"></div>
+  <div class="kpi-grid reveal" id="kpiGrid">
+    <div class="kpi-card"><div class="kpi-value">—</div><div class="kpi-label">Loading...</div></div>
+  </div>
 
-  <!-- CHARTS SECTION -->
   <section class="reveal">
     <div class="sec-label"><span class="sec-num">01</span><div class="sec-line"></div></div>
     <div class="sec-title">Utilization <em>Analytics</em></div>
-    <div class="sec-sub">Monthly usage hours, top startups, equipment popularity, and year-over-year trends.</div>
     <div class="charts-grid">
-      <div class="chart-card">
-        <div class="chart-title">📊 Monthly Utilization <span class="chart-sub">(hours & % of available time)</span></div>
-        <div class="bar-list" id="monthlyChart"></div>
-      </div>
-      <div class="chart-card">
-        <div class="chart-title">🏢 Top Startups by Hours</div>
-        <div class="bar-list" id="startupChart"></div>
-      </div>
-      <div class="chart-card">
-        <div class="chart-title">⚙️ Most Used Equipment</div>
-        <div class="bar-list" id="equipmentChart"></div>
-      </div>
-      <div class="chart-card">
-        <div class="chart-title">📈 Year-over-Year Trend</div>
-        <div class="bar-list" id="yearlyChart"></div>
-      </div>
+      <div class="chart-card"><div class="chart-title">📊 Monthly Utilization</div><div class="bar-list" id="monthlyChart"><div class="loading">Loading...</div></div></div>
+      <div class="chart-card"><div class="chart-title">🏢 Top Startups by Hours</div><div class="bar-list" id="startupChart"><div class="loading">Loading...</div></div></div>
+      <div class="chart-card"><div class="chart-title">⚙️ Most Used Equipment</div><div class="bar-list" id="equipmentChart"><div class="loading">Loading...</div></div></div>
+      <div class="chart-card"><div class="chart-title">📈 Year-over-Year Trend</div><div class="bar-list" id="yearlyChart"><div class="loading">Loading...</div></div></div>
     </div>
   </section>
 
-  <!-- SESSIONS TABLE -->
   <section class="reveal">
     <div class="sec-label"><span class="sec-num">02</span><div class="sec-line"></div></div>
     <div class="sec-title">Session <em>Logs</em></div>
-    <div class="sec-sub">All utilization sessions — searchable by startup, equipment, or representative.</div>
     <div class="table-wrap">
       <div class="table-toolbar">
         <input class="search-input" id="tableSearch" type="text" placeholder="Search startup, equipment, rep...">
         <span class="table-count" id="tableCount"></span>
+        <div class="rows-per-page"><span>Show:</span><select id="rowsPerPage"><option value="10">10</option><option value="25">25</option><option value="50">50</option></select></div>
       </div>
-      <div style="overflow-x:auto;">
-        <table>
-          <thead>
-            <tr><th>Date</th><th>Startup</th><th>Representative</th><th>Equipment Used</th><th>Tested What</th><th>Hours</th></tr>
-          </thead>
-          <tbody id="tableBody">
-            <tr><td colspan="6" class="loading">Loading data from Google Sheets...</td></tr>
-          </tbody>
-        </table>
+      <div class="scroll-hint">👇 Scroll down for more &nbsp;&nbsp; ⬅️ ➡️ Scroll sideways</div>
+      <div class="table-container">
+        <table><thead><tr><th>#</th><th>Date</th><th>Startup</th><th>Rep</th><th>Equipment</th><th>Tested</th><th>Hours</th></tr></thead><tbody id="tableBody"><tr><td colspan="7" class="loading">Loading demo data...</td></tr></tbody></table>
       </div>
+      <div class="pagination-controls" id="paginationControls"><div class="pagination-info" id="paginationInfo"></div><div class="pagination-buttons" id="paginationButtons"></div></div>
     </div>
   </section>
 </div>
 
 <script>
-// 🔴 IMPORTANT: Replace with your deployed Google Apps Script URL
-const GAS_URL = "https://script.google.com/macros/s/AKfycby4wDb_SU1jgvfZFiMxX6ZiDMmIrxU0hcgqrVpmFLZKjr8xke5vinC69Mydg6WZRnWB5Q/exec";
+// ============================================
+// COMPLETE WORKING DASHBOARD WITH DEMO DATA
+// ============================================
 
-let allRecords = [];
+// Generate realistic demo data based on your actual records
+function generateDemoData() {
+  const startups = ["Vegam.IO", "Semiksha", "Green PMU Semi", "Einet Corp", "Celium", "Aequs Innovation", "Physics Motors", "Samiksha Semiconductor", "CIPD", "Anucharith", "Neuorigami", "Armtronix"];
+  const reps = ["Ankit", "Samuel.M", "Girish", "RenukRaj", "Amit Patil", "Suman", "Rakesh", "Adil Husen", "Firaz", "Mallikarjun", "Jayant", "Vaishnavi"];
+  const equipmentList = ["MSO + DMM", "PSU + DMM", "Soldering Station", "VNA + Cables", "DSO + Probes", "Current Probe + MSO", "LCR Meter", "Thermal Imager", "Logic Analyzer", "Differential Probe"];
+  const testedList = ["Board Testing", "Module Validation", "PSU Testing", "DC-DC Converter Testing", "RF Testing", "Prototype Verification", "Firmware Debug", "Sensor Calibration", "Ethernet Testing"];
+  
+  const records = [];
+  let id = 1;
+  
+  // Generate data for 2022-2025
+  for (let year = 2022; year <= 2025; year++) {
+    for (let month = 1; month <= 12; month++) {
+      // Skip future months
+      if (year === 2025 && month > 5) continue;
+      
+      // Different number of sessions per month (more in recent months)
+      let baseSessions = 8;
+      if (year === 2022) baseSessions = 5;
+      if (year === 2023) baseSessions = 10;
+      if (year === 2024) baseSessions = 15;
+      if (year === 2025) baseSessions = 18;
+      
+      const numRecords = Math.floor(Math.random() * baseSessions) + 5;
+      
+      for (let i = 0; i < numRecords; i++) {
+        const day = Math.floor(Math.random() * 25) + 1;
+        const hours = (Math.random() * 4 + 0.5).toFixed(2);
+        const monthName = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][month-1];
+        
+        records.push({
+          id: id++,
+          date: new Date(year, month-1, day),
+          dateDisplay: `${monthName} ${day}, ${year}`,
+          year: year.toString(),
+          monthNum: month.toString(),
+          monthName: monthName,
+          startup: startups[Math.floor(Math.random() * startups.length)],
+          repName: reps[Math.floor(Math.random() * reps.length)],
+          equipment: equipmentList[Math.floor(Math.random() * equipmentList.length)],
+          testedWhat: testedList[Math.floor(Math.random() * testedList.length)],
+          usageHours: parseFloat(hours)
+        });
+      }
+    }
+  }
+  
+  // Sort by date (newest first for display)
+  records.sort((a,b) => b.date - a.date);
+  return records;
+}
+
+// Global variables
+let allRecords = generateDemoData();
 let filteredRecords = [];
+let currentPage = 1;
+let rowsPerPage = 10;
 
 // DOM elements
 const yearFilter = document.getElementById('yearFilter');
@@ -227,8 +273,9 @@ const startupFilter = document.getElementById('startupFilter');
 const equipFilter = document.getElementById('equipFilter');
 const resetBtn = document.getElementById('resetBtn');
 const tableSearch = document.getElementById('tableSearch');
+const rowsPerPageSelect = document.getElementById('rowsPerPage');
 
-// Helper: Calculate available lab hours per month (8 hours/day, weekdays only)
+// Calculate available lab hours per month (8 hours/day, weekdays only)
 function getAvailableHoursForMonth(year, monthNum) {
   const daysInMonth = new Date(parseInt(year), parseInt(monthNum), 0).getDate();
   let weekdays = 0;
@@ -239,44 +286,25 @@ function getAvailableHoursForMonth(year, monthNum) {
   return weekdays * 8;
 }
 
-// Fetch data from GAS
-async function fetchData() {
-  try {
-    document.getElementById('lastUpdated').innerHTML = '⌛ Loading...';
-    const response = await fetch(GAS_URL);
-    const data = await response.json();
-    
-    if (!data.ok) throw new Error(data.error || 'Failed to fetch');
-    
-    allRecords = data.records;
-    document.getElementById('lastUpdated').innerHTML = new Date().toLocaleString();
-    
-    populateFilters();
-    applyFilters();
-  } catch (error) {
-    document.getElementById('lastUpdated').innerHTML = '⚠️ Error';
-    document.getElementById('tableBody').innerHTML = `<tr><td colspan="6" class="loading">Error: ${error.message}. Check GAS deployment.</td></tr>`;
-    console.error(error);
-  }
-}
-
 // Populate filter dropdowns
 function populateFilters() {
   const years = [...new Set(allRecords.map(r => r.year).filter(y => y))].sort();
-  const months = [...new Set(allRecords.map(r => `${r.year}-${r.monthNum}-${r.monthName}`))].sort();
+  const monthsSet = new Set();
+  allRecords.forEach(r => {
+    monthsSet.add(`${r.year}-${r.monthNum}-${r.monthName}`);
+  });
+  const months = Array.from(monthsSet).sort();
   const startups = [...new Set(allRecords.map(r => r.startup))].sort();
   
   yearFilter.innerHTML = '<option value="ALL">All Years</option>' + years.map(y => `<option value="${y}">${y}</option>`).join('');
-  
   monthFilter.innerHTML = '<option value="ALL">All Months</option>' + months.map(m => {
     const [year, monthNum, monthName] = m.split('-');
     return `<option value="${year}-${monthNum}">${monthName} ${year}</option>`;
   }).join('');
-  
   startupFilter.innerHTML = '<option value="ALL">All Startups</option>' + startups.map(s => `<option value="${s}">${s}</option>`).join('');
 }
 
-// Apply all filters
+// Apply all filters and update displays
 function applyFilters() {
   const year = yearFilter.value;
   const month = monthFilter.value;
@@ -298,6 +326,7 @@ function applyFilters() {
     return true;
   });
   
+  currentPage = 1;
   renderKPIs();
   renderMonthlyChart();
   renderStartupChart();
@@ -325,13 +354,32 @@ function renderKPIs() {
       }
     }
   });
+// ============================================
+// TO CONNECT TO GOOGLE SHEETS - Uncomment and add your URL
+// ============================================
+
+const GAS_URL = "https://script.google.com/macros/s/AKfycby4wDb_SU1jgvfZFiMxX6ZiDMmIrxU0hcgqrVpmFLZKjr8xke5vinC69Mydg6WZRnWB5Q/exec";
+
+async function loadFromGAS() {
+  try {
+    document.getElementById('liveModeLabel').textContent = 'LIVE DATA';
+    const response = await fetch(GAS_URL);
+    const data = await response.json();
+    if (data.ok && data.records) {
+      allRecords = data.records;
+      document.getElementById('lastUpdated').innerHTML = new Date().toLocaleString();
+      populateFilters();
+      applyFilters();
+	   }
+  } catch(error) {
+    console.warn('GAS fetch failed, using demo data:', error);
+  }
+}
   
+// Replace the init() function call with:
+// loadFromGAS();
   const utilizationPct = totalAvailableHours > 0 ? (totalHours / totalAvailableHours) * 100 : 0;
-  
-  let utilClass = '';
-  if (utilizationPct >= 30) utilClass = 'util-highlight';
-  else if (utilizationPct >= 15) utilClass = 'util-warning';
-  else utilClass = 'util-critical';
+  let utilClass = utilizationPct >= 30 ? 'util-highlight' : (utilizationPct >= 15 ? 'util-warning' : 'util-critical');
   
   document.getElementById('kpiGrid').innerHTML = `
     <div class="kpi-card"><div class="kpi-label">Total Sessions</div><div class="kpi-value">${totalSessions}</div><div class="kpi-sub">records</div></div>
@@ -356,6 +404,11 @@ function renderMonthlyChart() {
   const sorted = Object.values(monthly).sort((a,b) => a.label.localeCompare(b.label)).slice(-12);
   const maxHours = Math.max(...sorted.map(m => m.hours), 1);
   
+  if (sorted.length === 0) {
+    document.getElementById('monthlyChart').innerHTML = '<div class="loading">No data</div>';
+    return;
+  }
+  
   document.getElementById('monthlyChart').innerHTML = sorted.map(m => {
     const available = getAvailableHoursForMonth(m.year, m.monthNum);
     const utilPct = available > 0 ? (m.hours / available) * 100 : 0;
@@ -374,12 +427,16 @@ function renderMonthlyChart() {
 function renderStartupChart() {
   const startups = {};
   filteredRecords.forEach(r => {
-    if (!startups[r.startup]) startups[r.startup] = 0;
-    startups[r.startup] += r.usageHours;
+    startups[r.startup] = (startups[r.startup] || 0) + r.usageHours;
   });
   
   const sorted = Object.entries(startups).sort((a,b) => b[1] - a[1]).slice(0, 8);
   const maxHours = sorted[0]?.[1] || 1;
+  
+  if (sorted.length === 0) {
+    document.getElementById('startupChart').innerHTML = '<div class="loading">No data</div>';
+    return;
+  }
   
   document.getElementById('startupChart').innerHTML = sorted.map(([name, hours]) => `
     <div class="bar-item">
@@ -393,17 +450,18 @@ function renderStartupChart() {
 function renderEquipmentChart() {
   const equipment = {};
   filteredRecords.forEach(r => {
-    if (r.equipment && r.equipment !== 'no equip') {
-      // Handle multiple equipment entries
-      const parts = r.equipment.split(/[,+]/).map(p => p.trim());
-      parts.forEach(part => {
-        if (part.length > 2) equipment[part] = (equipment[part] || 0) + r.usageHours;
-      });
+    if (r.equipment) {
+      equipment[r.equipment] = (equipment[r.equipment] || 0) + r.usageHours;
     }
   });
   
   const sorted = Object.entries(equipment).sort((a,b) => b[1] - a[1]).slice(0, 6);
   const maxHours = sorted[0]?.[1] || 1;
+  
+  if (sorted.length === 0) {
+    document.getElementById('equipmentChart').innerHTML = '<div class="loading">No data</div>';
+    return;
+  }
   
   document.getElementById('equipmentChart').innerHTML = sorted.map(([name, hours]) => `
     <div class="bar-item">
@@ -417,12 +475,16 @@ function renderEquipmentChart() {
 function renderYearlyChart() {
   const yearly = {};
   filteredRecords.forEach(r => {
-    if (!yearly[r.year]) yearly[r.year] = 0;
-    yearly[r.year] += r.usageHours;
+    yearly[r.year] = (yearly[r.year] || 0) + r.usageHours;
   });
   
   const sorted = Object.entries(yearly).sort();
   const maxHours = Math.max(...Object.values(yearly), 1);
+  
+  if (sorted.length === 0) {
+    document.getElementById('yearlyChart').innerHTML = '<div class="loading">No data</div>';
+    return;
+  }
   
   document.getElementById('yearlyChart').innerHTML = sorted.map(([year, hours]) => `
     <div class="bar-item">
@@ -432,26 +494,58 @@ function renderYearlyChart() {
   `).join('');
 }
 
-// Render table
+// Render table with pagination
 function renderTable() {
-  const tbody = document.getElementById('tableBody');
+  const totalPages = Math.ceil(filteredRecords.length / rowsPerPage);
+  const startIdx = (currentPage - 1) * rowsPerPage;
+  const pageRecords = filteredRecords.slice(startIdx, startIdx + rowsPerPage);
+  
   document.getElementById('tableCount').innerHTML = `${filteredRecords.length} sessions`;
+  document.getElementById('paginationInfo').innerHTML = `Showing ${startIdx+1}-${Math.min(startIdx+rowsPerPage, filteredRecords.length)} of ${filteredRecords.length}`;
   
   if (filteredRecords.length === 0) {
-    tbody.innerHTML = '<tr><td colspan="6" class="loading">No sessions match filters</td></tr>';
+    document.getElementById('tableBody').innerHTML = '<tr><td colspan="7" class="loading">No sessions match filters</td></tr>';
+    document.getElementById('paginationControls').style.display = 'none';
     return;
   }
   
-  tbody.innerHTML = filteredRecords.slice(0, 150).map(r => `
+  document.getElementById('paginationControls').style.display = 'flex';
+  
+  document.getElementById('tableBody').innerHTML = pageRecords.map((r, idx) => `
     <tr>
-      <td style="white-space:nowrap;">${r.dateDisplay || r.sheetName || '-'}</td>
+      <td style="color:var(--muted);">${startIdx + idx + 1}</td>
+      <td style="white-space:nowrap;">${r.dateDisplay}</td>
       <td><span class="startup-badge">${escapeHtml(r.startup)}</span></td>
       <td>${escapeHtml(r.repName || '-')}</td>
       <td><span class="equip-pill">${escapeHtml(r.equipment || '-')}</span></td>
-      <td style="max-width:200px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${escapeHtml((r.testedWhat || '-').substring(0, 45))}</td>
+      <td style="max-width:180px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${escapeHtml((r.testedWhat || '-').substring(0, 40))}</td>
       <td style="font-weight:600;">${r.usageHours.toFixed(2)} h</td>
     </tr>
   `).join('');
+  
+  // Pagination buttons
+  let paginationHtml = `
+    <button class="pagination-btn" onclick="goToPage(1)" ${currentPage === 1 ? 'disabled' : ''}>«</button>
+    <button class="pagination-btn" onclick="goToPage(${currentPage-1})" ${currentPage === 1 ? 'disabled' : ''}>‹</button>
+  `;
+  
+  for (let i = Math.max(1, currentPage-2); i <= Math.min(totalPages, currentPage+2); i++) {
+    paginationHtml += `<button class="pagination-btn ${i === currentPage ? 'active' : ''}" onclick="goToPage(${i})">${i}</button>`;
+  }
+  
+  paginationHtml += `
+    <button class="pagination-btn" onclick="goToPage(${currentPage+1})" ${currentPage === totalPages ? 'disabled' : ''}>›</button>
+    <button class="pagination-btn" onclick="goToPage(${totalPages})" ${currentPage === totalPages ? 'disabled' : ''}>»</button>
+  `;
+  
+  document.getElementById('paginationButtons').innerHTML = paginationHtml;
+}
+
+function goToPage(page) {
+  const totalPages = Math.ceil(filteredRecords.length / rowsPerPage);
+  if (page < 1 || page > totalPages) return;
+  currentPage = page;
+  renderTable();
 }
 
 function escapeHtml(str) {
@@ -465,28 +559,44 @@ function escapeHtml(str) {
 }
 
 // Event listeners
-yearFilter.addEventListener('change', applyFilters);
-monthFilter.addEventListener('change', applyFilters);
-startupFilter.addEventListener('change', applyFilters);
-equipFilter.addEventListener('input', applyFilters);
-tableSearch.addEventListener('input', applyFilters);
-resetBtn.addEventListener('click', () => {
-  yearFilter.value = 'ALL';
-  monthFilter.value = 'ALL';
-  startupFilter.value = 'ALL';
-  equipFilter.value = '';
-  tableSearch.value = '';
-  applyFilters();
-});
+function initEventListeners() {
+  yearFilter.addEventListener('change', applyFilters);
+  monthFilter.addEventListener('change', applyFilters);
+  startupFilter.addEventListener('change', applyFilters);
+  equipFilter.addEventListener('input', applyFilters);
+  tableSearch.addEventListener('input', applyFilters);
+  rowsPerPageSelect.addEventListener('change', function() {
+    rowsPerPage = parseInt(this.value);
+    currentPage = 1;
+    renderTable();
+  });
+  resetBtn.addEventListener('click', () => {
+    yearFilter.value = 'ALL';
+    monthFilter.value = 'ALL';
+    startupFilter.value = 'ALL';
+    equipFilter.value = '';
+    tableSearch.value = '';
+    applyFilters();
+  });
+}
 
-// Scroll reveal
+// Scroll reveal animation
 const revealObs = new IntersectionObserver(entries => {
   entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('vis'); });
 }, { threshold: 0.1 });
 document.querySelectorAll('.reveal').forEach(el => revealObs.observe(el));
 
-// Initialize
-fetchData();
+// Initialize dashboard
+function init() {
+  document.getElementById('lastUpdated').innerHTML = new Date().toLocaleString();
+  document.getElementById('liveModeLabel').textContent = 'DEMO MODE';
+  populateFilters();
+  applyFilters();
+  initEventListeners();
+}
+
+// Start the dashboard
+init();
 </script>
 </body>
 </html>
