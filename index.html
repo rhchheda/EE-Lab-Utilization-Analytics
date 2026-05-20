@@ -452,7 +452,7 @@ function getAvailableHoursForMonth(year, monthNum) {
 // Fetch data from GAS
 async function fetchData() {
   try {
-    document.getElementById('lastUpdated').innerHTML = '⌛ Loading...';
+    document.getElementById('lastUpdated').innerHTML = '⌛ Connecting...to EE Lab';
     const response = await fetch(GAS_URL);
     const data = await response.json();
     
