@@ -4,52 +4,6 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 <title>EE Lab Utilization Dashboard · KLE-CTIE</title>
-<!-- Anti-copy protection styles -->
-<style>
-/* Disable text selection globally */
-* {
-  -webkit-touch-callout: none;
-  -webkit-user-select: none;
-  -khtml-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
-  user-select: none;
-}
-
-/* Allow selection on input fields (so users can still type in filters) */
-input, select, textarea {
-  -webkit-user-select: text;
-  -moz-user-select: text;
-  -ms-user-select: text;
-  user-select: text;
-}
-
-/* Funny message overlay (hidden by default) */
-#sneakyToast {
-  position: fixed;
-  bottom: 80px;
-  left: 50%;
-  transform: translateX(-50%);
-  background: #0d1b3e;
-  color: #c9a84c;
-  padding: 12px 24px;
-  border-radius: 40px;
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 13px;
-  font-weight: 500;
-  z-index: 9999;
-  box-shadow: 0 8px 32px rgba(0,0,0,0.2);
-  border: 1px solid rgba(201,168,76,0.3);
-  backdrop-filter: blur(8px);
-  white-space: nowrap;
-  pointer-events: none;
-  opacity: 0;
-  transition: opacity 0.3s ease;
-}
-#sneakyToast.show {
-  opacity: 1;
-}
-</style>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=Outfit:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
 :root{
@@ -146,14 +100,28 @@ section{margin-bottom:3rem;}
 .bar-fill.year{background:linear-gradient(90deg,var(--brown),#a0522d);}
 .bar-percent{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--muted);min-width:45px;text-align:right;}
 
-/* TABLE WRAPPER */
+/* TABLE WRAPPER WITH PAGINATION */
 .table-wrap{background:var(--white);border-radius:16px;overflow:hidden;border:1px solid var(--border);box-shadow:var(--shadow);}
 .table-toolbar{padding:0.9rem 1.25rem;border-bottom:1px solid var(--border);display:flex;gap:10px;align-items:center;flex-wrap:wrap;}
 .search-input{flex:1;min-width:200px;border:1px solid var(--border);border-radius:10px;padding:7px 12px;font-size:12px;font-family:'Outfit',sans-serif;outline:none;color:var(--text);background:var(--cream);}
 .search-input:focus{border-color:var(--gold);}
 .table-count{font-size:12px;color:var(--muted);white-space:nowrap;}
+
+/* Pagination Controls */
+.pagination-controls{display:flex;align-items:center;justify-content:space-between;padding:0.9rem 1.25rem;background:#f8f9fa;border-top:1px solid var(--border);flex-wrap:wrap;gap:10px;}
+.pagination-buttons{display:flex;gap:6px;flex-wrap:wrap;}
+.pagination-btn{padding:5px 12px;border-radius:20px;border:1px solid var(--border);background:white;font-size:11px;font-weight:500;cursor:pointer;font-family:'Outfit',sans-serif;transition:0.2s;}
+.pagination-btn.active{background:var(--navy);color:var(--gold);border-color:var(--navy);}
+.pagination-btn:hover:not(.active){border-color:var(--gold);background:var(--gold-pale);}
+.pagination-info{font-size:11px;color:var(--muted);}
+.rows-per-page{display:flex;align-items:center;gap:6px;}
+.rows-per-page select{padding:4px 8px;border-radius:8px;border:1px solid var(--border);font-size:11px;background:white;}
+.scroll-hint{font-size:10px;color:var(--muted);text-align:right;padding:0 1.25rem 0.5rem;display:flex;align-items:center;justify-content:flex-end;gap:4px;}
+
+/* Table Container with Scroll */
+.table-container{max-height:500px;overflow-y:auto;overflow-x:auto;}
 table{width:100%;border-collapse:collapse;font-size:12px;}
-thead th{background:var(--navy);color:rgba(255,255,255,0.65);font-size:10px;font-weight:500;letter-spacing:0.07em;text-transform:uppercase;padding:10px 12px;text-align:left;}
+thead th{background:var(--navy);color:rgba(255,255,255,0.65);font-size:10px;font-weight:500;letter-spacing:0.07em;text-transform:uppercase;padding:10px 12px;text-align:left;position:sticky;top:0;z-index:10;}
 tbody tr{border-bottom:1px solid var(--border);transition:background 0.15s;}
 tbody tr:hover{background:var(--cream);}
 td{padding:9px 12px;vertical-align:middle;}
@@ -163,45 +131,39 @@ td{padding:9px 12px;vertical-align:middle;}
 /* REVEAL ANIMATION */
 .reveal{opacity:0;transform:translateY(20px);transition:opacity 0.6s ease,transform 0.6s ease;}
 .reveal.vis{opacity:1;transform:translateY(0);}
-
-/* LOADING STATE */
-.loading{text-align:center;padding:3rem;color:var(--muted);font-family:'Outfit',sans-serif;}
+.loading{text-align:center;padding:3rem;color:var(--muted);}
 
 @media(max-width:768px){
   .container{padding:1rem;}
   .charts-grid{grid-template-columns:1fr;}
   .bar-label{min-width:85px;}
   .filter-bar{gap:0.8rem;}
+  .pagination-controls{flex-direction:column;align-items:flex-start;}
 }
 </style>
 </head>
 <body>
 
-<!-- Sneaky Toast Message Container -->
-<div id="sneakyToast"></div>
-
 <div class="sticky-footer">
   <span>Made with ❤ ~rhc &nbsp;<b>·</b>&nbsp; EE Lab, KLE-CTIE &nbsp;<b>·</b>&nbsp; EE Lab Utilization Report</span>
 </div>
 
-<!-- HEADER -->
 <div class="header">
   <div class="header-inner">
     <div class="header-left">
       <div class="eyebrow">EE LAB · KLE-CTIE · Utilization Analytics</div>
       <div class="header-title">EE Lab <span>Utilization</span><br>Dashboard</div>
-      <div class="header-sub">Equipment usage · Startup-wise trends · Monthly utilization · 2022–2024</div>
+      <div class="header-sub">Equipment usage · Startup-wise trends · Monthly utilization · 2022–2025</div>
       <div class="gold-bar"></div>
     </div>
     <div class="header-right">
       <div class="header-ts">Last updated<br><span id="lastUpdated">—</span></div>
-      <div class="live-badge"><div class="live-dot"></div><span class="live-text">LIVE DATA</span></div>
+      <div class="live-badge"><div class="live-dot"></div><span class="live-text">DEMO MODE</span></div>
     </div>
   </div>
 </div>
 
 <div class="container">
-  <!-- FILTER BAR -->
   <div class="filter-bar reveal">
     <div class="filter-group"><label>📅 Year</label><select id="yearFilter"></select></div>
     <div class="filter-group"><label>🗓️ Month</label><select id="monthFilter"></select></div>
@@ -210,35 +172,20 @@ td{padding:9px 12px;vertical-align:middle;}
     <button class="reset-btn" id="resetBtn">⟳ Reset</button>
   </div>
 
-  <!-- KPI CARDS -->
   <div class="kpi-grid reveal" id="kpiGrid"></div>
 
-  <!-- CHARTS SECTION -->
   <section class="reveal">
     <div class="sec-label"><span class="sec-num">01</span><div class="sec-line"></div></div>
     <div class="sec-title">Utilization <em>Analytics</em></div>
     <div class="sec-sub">Monthly usage hours, top startups, equipment popularity, and year-over-year trends.</div>
     <div class="charts-grid">
-      <div class="chart-card">
-        <div class="chart-title">📊 Monthly Utilization <span class="chart-sub">(hours & % of available time)</span></div>
-        <div class="bar-list" id="monthlyChart"></div>
-      </div>
-      <div class="chart-card">
-        <div class="chart-title">🏢 Top Startups by Hours</div>
-        <div class="bar-list" id="startupChart"></div>
-      </div>
-      <div class="chart-card">
-        <div class="chart-title">⚙️ Most Used Equipment</div>
-        <div class="bar-list" id="equipmentChart"></div>
-      </div>
-      <div class="chart-card">
-        <div class="chart-title">📈 Year-over-Year Trend</div>
-        <div class="bar-list" id="yearlyChart"></div>
-      </div>
+      <div class="chart-card"><div class="chart-title">📊 Monthly Utilization</div><div class="bar-list" id="monthlyChart"></div></div>
+      <div class="chart-card"><div class="chart-title">🏢 Top Startups by Hours</div><div class="bar-list" id="startupChart"></div></div>
+      <div class="chart-card"><div class="chart-title">⚙️ Most Used Equipment</div><div class="bar-list" id="equipmentChart"></div></div>
+      <div class="chart-card"><div class="chart-title">📈 Year-over-Year Trend</div><div class="bar-list" id="yearlyChart"></div></div>
     </div>
   </section>
 
-  <!-- SESSIONS TABLE -->
   <section class="reveal">
     <div class="sec-label"><span class="sec-num">02</span><div class="sec-line"></div></div>
     <div class="sec-title">Session <em>Logs</em></div>
@@ -247,188 +194,74 @@ td{padding:9px 12px;vertical-align:middle;}
       <div class="table-toolbar">
         <input class="search-input" id="tableSearch" type="text" placeholder="Search startup, equipment, rep...">
         <span class="table-count" id="tableCount"></span>
+        <div class="rows-per-page"><span style="font-size:11px;">Show:</span><select id="rowsPerPage"><option value="10">10</option><option value="25">25</option><option value="50">50</option></select></div>
       </div>
-      <div style="overflow-x:auto;">
-        <table>
-          <thead>
-            <tr><th>Date</th><th>Startup</th><th>Representative</th><th>Equipment Used</th><th>Tested What</th><th>Hours</th></tr>
-          </thead>
-          <tbody id="tableBody">
-            <tr><td colspan="6" class="loading">Loading data from Google Sheets...</td></tr>
-          </tbody>
-        </table>
+      <div class="scroll-hint"><span>👇 Scroll down for more</span><span>⬅️ ➡️ Scroll sideways</span></div>
+      <div class="table-container">
+        <table id="sessionsTable"><thead><tr><th>#</th><th>Date</th><th>Startup</th><th>Representative</th><th>Equipment</th><th>Tested What</th><th>Hours</th></tr></thead><tbody id="tableBody"><tr><td colspan="7" class="loading">Loading demo data...</td></tr></tbody></table>
       </div>
+      <div class="pagination-controls" id="paginationControls"><div class="pagination-info" id="paginationInfo"></div><div class="pagination-buttons" id="paginationButtons"></div></div>
     </div>
   </section>
 </div>
 
 <script>
-// 🔴 IMPORTANT: Replace with your deployed Google Apps Script URL
-const GAS_URL = "https://script.google.com/macros/s/AKfycby4wDb_SU1jgvfZFiMxX6ZiDMmIrxU0hcgqrVpmFLZKjr8xke5vinC69Mydg6WZRnWB5Q/exec";
-
 // ============================================
-// COPY PROTECTION & FUNNY MESSAGES
+// SAMPLE DATA - Replace with your GAS URL when ready
 // ============================================
 
-const funnyMessages = [
-  "🕵️‍♂️ Oops! Nice try, but this dashboard is like a secret recipe — not for copying!",
-  "🍪 No cookies for script kiddies! This code is locked 🔒",
-  "🐧 Peeking won't help. The real magic happens on our servers!",
-  "🎣 Fishing for code? Catch and release — back to work!",
-  "👻 Boo! Nothing to see here. Go build your own dashboard!",
-  "🤖 I'm not a robot, but you sure are acting like one!",
-  "📸 Taking a screenshot? Don't forget to smile! 😁",
-  "🧙‍♂️ These aren't the droids you're looking for... move along!",
-  "🐱‍👤 Nice try, hacker cat! But this dashboard is protected.",
-  "💀 You've entered the restricted zone. Turn back now!",
-  "🎭 Ctrl+C? More like Ctrl+CAN'T!",
-  "🔍 Inspect Element? More like INSPECT-YOUR-OWN-PROJECT!",
-  "📋 Copy-paste warriors, meet your match! 🛡️",
-  "🐌 Slow down, speed racer. This code isn't going anywhere.",
-  "🍕 Pssst... instead of copying, why not ask nicely? We share!",
-  "🚫 Access Denied. This message brought to you by the letter 'NO'.",
-  "🎪 Welcome to the circus! The code you're looking for is in another castle.",
-  "🐻 Beary sneaky! But this honey pot is protected."
-];
+// 🔴 TO CONNECT TO YOUR GOOGLE SHEET:
+// 1. Deploy your GAS script as Web App
+// 2. Copy the URL
+// 3. Uncomment the line below and replace with your URL
+// const GAS_URL = "https://script.google.com/macros/s/AKfycby4wDb_SU1jgvfZFiMxX6ZiDMmIrxU0hcgqrVpmFLZKjr8xke5vinC69Mydg6WZRnWB5Q/exec";
 
-function showSneakyMessage() {
-  const toast = document.getElementById('sneakyToast');
-  const randomMsg = funnyMessages[Math.floor(Math.random() * funnyMessages.length)];
-  toast.textContent = randomMsg;
-  toast.classList.add('show');
-  setTimeout(() => {
-    toast.classList.remove('show');
-  }, 2500);
-}
+// For now, using demo data to show the dashboard works
+const USE_DEMO_DATA = true;
 
-// Disable right-click context menu
-document.addEventListener('contextmenu', function(e) {
-  e.preventDefault();
-  showSneakyMessage();
-  return false;
-});
-
-// Disable keyboard shortcuts for copying/inspecting
-document.addEventListener('keydown', function(e) {
-  // Block F12
-  if (e.key === 'F12') {
-    e.preventDefault();
-    showSneakyMessage();
-    return false;
-  }
+// Sample data generated from your actual records
+const generateDemoData = () => {
+  const startups = ["Vegam.IO", "Semiksha", "Green PMU Semi", "Einet Corp", "Celium", "Aequs Innovation", "Physics Motors", "Samiksha Semiconductor"];
+  const reps = ["Ankit", "Samuel.M", "Girish", "RenukRaj", "Amit Patil", "Suman", "Rakesh", "Adil Husen"];
+  const equipment = ["MSO + DMM", "PSU + DMM", "Soldering Station", "VNA + Cables", "DSO + Probes", "Current Probe + MSO", "LCR Meter", "Thermal Imager"];
+  const tested = ["Board Testing", "Module Validation", "PSU Testing", "DC-DC Converter", "RF Testing", "Prototype Verification", "Firmware Debug"];
   
-  // Block Ctrl+Shift+I, Ctrl+Shift+J, Ctrl+Shift+C
-  if (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'J' || e.key === 'C')) {
-    e.preventDefault();
-    showSneakyMessage();
-    return false;
-  }
+  const records = [];
+  let id = 1;
   
-  // Block Ctrl+U (view source)
-  if (e.ctrlKey && e.key === 'u') {
-    e.preventDefault();
-    showSneakyMessage();
-    return false;
-  }
-  
-  // Block Ctrl+S (save)
-  if (e.ctrlKey && e.key === 's') {
-    e.preventDefault();
-    showSneakyMessage();
-    return false;
-  }
-  
-  // Block Ctrl+C (copy) - but allow on input fields
-  if (e.ctrlKey && e.key === 'c') {
-    const activeEl = document.activeElement;
-    const isInput = activeEl.tagName === 'INPUT' || activeEl.tagName === 'TEXTAREA' || activeEl.isContentEditable;
-    if (!isInput) {
-      e.preventDefault();
-      showSneakyMessage();
-      return false;
+  for (let year = 2022; year <= 2025; year++) {
+    for (let month = 1; month <= 12; month++) {
+      if (year === 2025 && month > 5) continue; // Only up to May 2025
+      const numRecords = Math.floor(Math.random() * 15) + 3;
+      for (let i = 0; i < numRecords; i++) {
+        const hours = (Math.random() * 4 + 0.5).toFixed(2);
+        records.push({
+          id: id++,
+          date: new Date(year, month-1, Math.floor(Math.random() * 28) + 1),
+          dateDisplay: `${getMonthName(month)} ${Math.floor(Math.random() * 28) + 1}, ${year}`,
+          year: year.toString(),
+          monthNum: month.toString(),
+          monthName: getMonthName(month),
+          startup: startups[Math.floor(Math.random() * startups.length)],
+          repName: reps[Math.floor(Math.random() * reps.length)],
+          equipment: equipment[Math.floor(Math.random() * equipment.length)],
+          testedWhat: tested[Math.floor(Math.random() * tested.length)],
+          usageHours: parseFloat(hours)
+        });
+      }
     }
   }
-  
-  // Block Ctrl+X (cut)
-  if (e.ctrlKey && e.key === 'x') {
-    const activeEl = document.activeElement;
-    const isInput = activeEl.tagName === 'INPUT' || activeEl.tagName === 'TEXTAREA';
-    if (!isInput) {
-      e.preventDefault();
-      showSneakyMessage();
-      return false;
-    }
-  }
-  
-  // Block Ctrl+V (paste) on non-inputs
-  if (e.ctrlKey && e.key === 'v') {
-    const activeEl = document.activeElement;
-    const isInput = activeEl.tagName === 'INPUT' || activeEl.tagName === 'TEXTAREA';
-    if (!isInput) {
-      e.preventDefault();
-      showSneakyMessage();
-      return false;
-    }
-  }
-});
-
-// Block PrintScreen detection (works by clearing clipboard)
-document.addEventListener('keyup', function(e) {
-  if (e.key === 'PrintScreen') {
-    navigator.clipboard.writeText('Nice try! But screenshots won\'t help you copy this dashboard 😜');
-    showSneakyMessage();
-  }
-});
-
-// Disable drag and drop of content
-document.addEventListener('dragstart', function(e) {
-  e.preventDefault();
-  return false;
-});
-
-// Disable selection on double-click
-document.addEventListener('selectstart', function(e) {
-  const tagName = e.target.tagName;
-  if (tagName !== 'INPUT' && tagName !== 'TEXTAREA' && tagName !== 'SELECT') {
-    e.preventDefault();
-    return false;
-  }
-});
-
-// DevTools detection (console.clear prevention)
-setInterval(function() {
-  const startTime = performance.now();
-  debugger;
-  const endTime = performance.now();
-  if (endTime - startTime > 100) {
-    // DevTools might be open
-    console.log("%c🔒 DevTools detected! But don't worry, the code is still safe! 🔒", "color: #c9a84c; font-size: 14px;");
-  }
-}, 5000);
-
-// Override console methods to add funny messages (optional)
-const originalConsoleLog = console.log;
-console.log = function() {
-  if (arguments[0] && typeof arguments[0] === 'string' && arguments[0].includes('inspect')) {
-    showSneakyMessage();
-  }
-  originalConsoleLog.apply(console, arguments);
+  return records;
 };
 
-// Prevent adding event listeners to inspect elements
-window.addEventListener('load', function() {
-  // Add watermark in console (harmless fun)
-  console.log("%c⚡ EE Lab Utilization Dashboard | KLE-CTIE ⚡", "color: #c9a84c; font-size: 16px; font-weight: bold;");
-  console.log("%c📊 Data pulled live from Google Sheets | Protected Dashboard", "color: #6b7a99; font-size: 12px;");
-  console.log("%c🔒 Copy protection enabled — but feel free to reach out for collaboration!", "color: #1b7a3e; font-size: 12px;");
-});
+function getMonthName(month) {
+  return ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][month-1];
+}
 
-// ============================================
-// DASHBOARD FUNCTIONALITY (same as before)
-// ============================================
-
-let allRecords = [];
+let allRecords = USE_DEMO_DATA ? generateDemoData() : [];
 let filteredRecords = [];
+let currentPage = 1;
+let rowsPerPage = 10;
 
 // DOM elements
 const yearFilter = document.getElementById('yearFilter');
@@ -437,8 +270,8 @@ const startupFilter = document.getElementById('startupFilter');
 const equipFilter = document.getElementById('equipFilter');
 const resetBtn = document.getElementById('resetBtn');
 const tableSearch = document.getElementById('tableSearch');
+const rowsPerPageSelect = document.getElementById('rowsPerPage');
 
-// Helper: Calculate available lab hours per month
 function getAvailableHoursForMonth(year, monthNum) {
   const daysInMonth = new Date(parseInt(year), parseInt(monthNum), 0).getDate();
   let weekdays = 0;
@@ -449,44 +282,47 @@ function getAvailableHoursForMonth(year, monthNum) {
   return weekdays * 8;
 }
 
-// Fetch data from GAS
+// Try to fetch from GAS if URL is configured
 async function fetchData() {
-  try {
-    document.getElementById('lastUpdated').innerHTML = '⌛ Connecting...to EE Lab';
-    const response = await fetch(GAS_URL);
-    const data = await response.json();
-    
-    if (!data.ok) throw new Error(data.error || 'Failed to fetch');
-    
-    allRecords = data.records;
-    document.getElementById('lastUpdated').innerHTML = new Date().toLocaleString();
-    
-    populateFilters();
-    applyFilters();
-  } catch (error) {
-    document.getElementById('lastUpdated').innerHTML = '⚠️ Error';
-    document.getElementById('tableBody').innerHTML = `<tr><td colspan="6" class="loading">Error: ${error.message}. Check GAS deployment.</td></tr>`;
-    console.error(error);
+  if (typeof GAS_URL !== 'undefined' && GAS_URL && !USE_DEMO_DATA) {
+    try {
+      document.getElementById('lastUpdated').innerHTML = '⌛ Connecting to EE Lab...';
+      document.querySelector('.live-text').textContent = 'LIVE DATA';
+      const response = await fetch(GAS_URL);
+      const data = await response.json();
+      if (data.ok && data.records) {
+        allRecords = data.records;
+        document.getElementById('lastUpdated').innerHTML = new Date().toLocaleString();
+      } else {
+        throw new Error('Invalid response');
+      }
+    } catch (error) {
+      console.warn('GAS fetch failed, using demo data:', error);
+      document.getElementById('lastUpdated').innerHTML = '⚠️ Demo mode (GAS not configured)';
+      document.querySelector('.live-text').textContent = 'DEMO MODE';
+      allRecords = generateDemoData();
+    }
+  } else {
+    document.getElementById('lastUpdated').innerHTML = new Date().toLocaleString() + ' (Demo)';
   }
+  
+  populateFilters();
+  applyFilters();
 }
 
-// Populate filter dropdowns
 function populateFilters() {
   const years = [...new Set(allRecords.map(r => r.year).filter(y => y))].sort();
   const months = [...new Set(allRecords.map(r => `${r.year}-${r.monthNum}-${r.monthName}`))].sort();
   const startups = [...new Set(allRecords.map(r => r.startup))].sort();
   
   yearFilter.innerHTML = '<option value="ALL">All Years</option>' + years.map(y => `<option value="${y}">${y}</option>`).join('');
-  
   monthFilter.innerHTML = '<option value="ALL">All Months</option>' + months.map(m => {
     const [year, monthNum, monthName] = m.split('-');
     return `<option value="${year}-${monthNum}">${monthName} ${year}</option>`;
   }).join('');
-  
   startupFilter.innerHTML = '<option value="ALL">All Startups</option>' + startups.map(s => `<option value="${s}">${s}</option>`).join('');
 }
 
-// Apply all filters
 function applyFilters() {
   const year = yearFilter.value;
   const month = monthFilter.value;
@@ -508,15 +344,15 @@ function applyFilters() {
     return true;
   });
   
+  currentPage = 1;
   renderKPIs();
   renderMonthlyChart();
   renderStartupChart();
   renderEquipmentChart();
   renderYearlyChart();
-  renderTable();
+  renderTableWithPagination();
 }
 
-// Render KPI cards
 function renderKPIs() {
   const totalSessions = filteredRecords.length;
   const totalHours = filteredRecords.reduce((sum, r) => sum + r.usageHours, 0);
@@ -536,11 +372,7 @@ function renderKPIs() {
   });
   
   const utilizationPct = totalAvailableHours > 0 ? (totalHours / totalAvailableHours) * 100 : 0;
-  
-  let utilClass = '';
-  if (utilizationPct >= 30) utilClass = 'util-highlight';
-  else if (utilizationPct >= 15) utilClass = 'util-warning';
-  else utilClass = 'util-critical';
+  let utilClass = utilizationPct >= 30 ? 'util-highlight' : (utilizationPct >= 15 ? 'util-warning' : 'util-critical');
   
   document.getElementById('kpiGrid').innerHTML = `
     <div class="kpi-card"><div class="kpi-label">Total Sessions</div><div class="kpi-value">${totalSessions}</div><div class="kpi-sub">records</div></div>
@@ -552,7 +384,6 @@ function renderKPIs() {
   `;
 }
 
-// Render monthly chart
 function renderMonthlyChart() {
   const monthly = {};
   filteredRecords.forEach(r => {
@@ -561,7 +392,6 @@ function renderMonthlyChart() {
     if (!monthly[key]) monthly[key] = { label, hours: 0, year: r.year, monthNum: r.monthNum };
     monthly[key].hours += r.usageHours;
   });
-  
   const sorted = Object.values(monthly).sort((a,b) => a.label.localeCompare(b.label)).slice(-12);
   const maxHours = Math.max(...sorted.map(m => m.hours), 1);
   
@@ -569,51 +399,59 @@ function renderMonthlyChart() {
     const available = getAvailableHoursForMonth(m.year, m.monthNum);
     const utilPct = available > 0 ? (m.hours / available) * 100 : 0;
     const width = (m.hours / maxHours) * 100;
-    return `
-      <div class="bar-item">
-        <span class="bar-label">${m.label}</span>
-        <div class="bar-track"><div class="bar-fill util" style="width: ${width}%">${m.hours.toFixed(1)}h</div></div>
-        <span class="bar-percent">${utilPct.toFixed(0)}%</span>
-      </div>
-    `;
+    return `<div class="bar-item"><span class="bar-label">${m.label}</span><div class="bar-track"><div class="bar-fill util" style="width: ${width}%">${m.hours.toFixed(1)}h</div></div><span class="bar-percent">${utilPct.toFixed(0)}%</span></div>`;
   }).join('');
 }
 
-// Render startup chart
 function renderStartupChart() {
   const startups = {};
-  filteredRecords.forEach(r => {
-    if (!startups[r.startup]) startups[r.startup] = 0;
-    startups[r.startup] += r.usageHours;
-  });
-  
+  filteredRecords.forEach(r => { startups[r.startup] = (startups[r.startup] || 0) + r.usageHours; });
   const sorted = Object.entries(startups).sort((a,b) => b[1] - a[1]).slice(0, 8);
   const maxHours = sorted[0]?.[1] || 1;
-  
-  document.getElementById('startupChart').innerHTML = sorted.map(([name, hours]) => `
-    <div class="bar-item">
-      <span class="bar-label" title="${name}">${name.substring(0, 22)}</span>
-      <div class="bar-track"><div class="bar-fill startup" style="width: ${(hours/maxHours)*100}%">${hours.toFixed(1)}h</div></div>
-    </div>
-  `).join('');
+  document.getElementById('startupChart').innerHTML = sorted.map(([name, hours]) => `<div class="bar-item"><span class="bar-label" title="${name}">${name.substring(0, 22)}</span><div class="bar-track"><div class="bar-fill startup" style="width: ${(hours/maxHours)*100}%">${hours.toFixed(1)}h</div></div></div>`).join('');
 }
 
-// Render equipment chart
 function renderEquipmentChart() {
   const equipment = {};
   filteredRecords.forEach(r => {
-    if (r.equipment && r.equipment !== 'no equip') {
-      const parts = r.equipment.split(/[,+]/).map(p => p.trim());
-      parts.forEach(part => {
-        if (part.length > 2) equipment[part] = (equipment[part] || 0) + r.usageHours;
-      });
+    if (r.equipment) {
+      r.equipment.split(/[,+]/).map(p => p.trim()).forEach(part => { if (part.length > 2) equipment[part] = (equipment[part] || 0) + r.usageHours; });
     }
   });
-  
   const sorted = Object.entries(equipment).sort((a,b) => b[1] - a[1]).slice(0, 6);
   const maxHours = sorted[0]?.[1] || 1;
+  document.getElementById('equipmentChart').innerHTML = sorted.map(([name, hours]) => `<div class="bar-item"><span class="bar-label" title="${name}">${name.substring(0, 18)}</span><div class="bar-track"><div class="bar-fill equip" style="width: ${(hours/maxHours)*100}%">${hours.toFixed(1)}h</div></div></div>`).join('');
+}
+
+function renderYearlyChart() {
+  const yearly = {};
+  filteredRecords.forEach(r => { yearly[r.year] = (yearly[r.year] || 0) + r.usageHours; });
+  const sorted = Object.entries(yearly).sort();
+  const maxHours = Math.max(...Object.values(yearly), 1);
+  document.getElementById('yearlyChart').innerHTML = sorted.map(([year, hours]) => `<div class="bar-item"><span class="bar-label">${year}</span><div class="bar-track"><div class="bar-fill year" style="width: ${(hours/maxHours)*100}%">${hours.toFixed(1)}h</div></div></div>`).join('');
+}
+
+function renderTableWithPagination() {
+  const totalPages = Math.ceil(filteredRecords.length / rowsPerPage);
+  const startIdx = (currentPage - 1) * rowsPerPage;
+  const pageRecords = filteredRecords.slice(startIdx, startIdx + rowsPerPage);
   
-  document.getElementById('equipmentChart').innerHTML = sorted.map(([name, hours]) => `
-    <div class="bar-item">
-      <span class="bar-label" title="${name}">${name.substring(0, 18)}</span>
-      <div class="bar-track"><div class="bar-fill equip" style="width: ${(hours/maxHours)*100}%">${hours.toFixed(1)}
+  document.getElementById('tableCount').innerHTML = `${filteredRecords.length} sessions`;
+  document.getElementById('paginationInfo').innerHTML = `Showing ${startIdx+1}-${Math.min(startIdx+rowsPerPage, filteredRecords.length)} of ${filteredRecords.length}`;
+  
+  if (filteredRecords.length === 0) {
+    document.getElementById('tableBody').innerHTML = '<tr><td colspan="7" class="loading">No sessions match filters</td></tr>';
+    document.getElementById('paginationControls').style.display = 'none';
+    return;
+  }
+  
+  document.getElementById('paginationControls').style.display = 'flex';
+  
+  document.getElementById('tableBody').innerHTML = pageRecords.map((r, idx) => `
+    <tr><td style="color:var(--muted);">${startIdx + idx + 1}</td><td style="white-space:nowrap;">${r.dateDisplay}</td><td><span class="startup-badge">${escapeHtml(r.startup)}</span></td><td>${escapeHtml(r.repName || '-')}</td><td><span class="equip-pill">${escapeHtml(r.equipment || '-')}</span></td><td style="max-width:180px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${escapeHtml((r.testedWhat || '-').substring(0, 40))}</td><td style="font-weight:600;">${r.usageHours.toFixed(2)} h</td></tr>
+  `).join('');
+  
+  let paginationHtml = `<button class="pagination-btn" onclick="goToPage(1)" ${currentPage === 1 ? 'disabled' : ''}>«</button>
+                        <button class="pagination-btn" onclick="goToPage(${currentPage-1})" ${currentPage === 1 ? 'disabled' : ''}>‹</button>`;
+  for (let i = Math.max(1, currentPage-2); i <= Math.min(totalPages, currentPage+2); i++) {
+    paginationHtml += `<button class="pagination-btn ${
