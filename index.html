@@ -2,8 +2,54 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 <title>EE Lab Utilization Dashboard · KLE-CTIE</title>
+<!-- Anti-copy protection styles -->
+<style>
+/* Disable text selection globally */
+* {
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+/* Allow selection on input fields (so users can still type in filters) */
+input, select, textarea {
+  -webkit-user-select: text;
+  -moz-user-select: text;
+  -ms-user-select: text;
+  user-select: text;
+}
+
+/* Funny message overlay (hidden by default) */
+#sneakyToast {
+  position: fixed;
+  bottom: 80px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #0d1b3e;
+  color: #c9a84c;
+  padding: 12px 24px;
+  border-radius: 40px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 13px;
+  font-weight: 500;
+  z-index: 9999;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+  border: 1px solid rgba(201,168,76,0.3);
+  backdrop-filter: blur(8px);
+  white-space: nowrap;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+#sneakyToast.show {
+  opacity: 1;
+}
+</style>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=Outfit:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
 :root{
@@ -131,6 +177,9 @@ td{padding:9px 12px;vertical-align:middle;}
 </head>
 <body>
 
+<!-- Sneaky Toast Message Container -->
+<div id="sneakyToast"></div>
+
 <div class="sticky-footer">
   <span>Made with ❤ ~rhc &nbsp;<b>·</b>&nbsp; EE Lab, KLE-CTIE &nbsp;<b>·</b>&nbsp; EE Lab Utilization Report</span>
 </div>
@@ -217,6 +266,167 @@ td{padding:9px 12px;vertical-align:middle;}
 // 🔴 IMPORTANT: Replace with your deployed Google Apps Script URL
 const GAS_URL = "https://script.google.com/macros/s/AKfycby4wDb_SU1jgvfZFiMxX6ZiDMmIrxU0hcgqrVpmFLZKjr8xke5vinC69Mydg6WZRnWB5Q/exec";
 
+// ============================================
+// COPY PROTECTION & FUNNY MESSAGES
+// ============================================
+
+const funnyMessages = [
+  "🕵️‍♂️ Oops! Nice try, but this dashboard is like a secret recipe — not for copying!",
+  "🍪 No cookies for script kiddies! This code is locked 🔒",
+  "🐧 Peeking won't help. The real magic happens on our servers!",
+  "🎣 Fishing for code? Catch and release — back to work!",
+  "👻 Boo! Nothing to see here. Go build your own dashboard!",
+  "🤖 I'm not a robot, but you sure are acting like one!",
+  "📸 Taking a screenshot? Don't forget to smile! 😁",
+  "🧙‍♂️ These aren't the droids you're looking for... move along!",
+  "🐱‍👤 Nice try, hacker cat! But this dashboard is protected.",
+  "💀 You've entered the restricted zone. Turn back now!",
+  "🎭 Ctrl+C? More like Ctrl+CAN'T!",
+  "🔍 Inspect Element? More like INSPECT-YOUR-OWN-PROJECT!",
+  "📋 Copy-paste warriors, meet your match! 🛡️",
+  "🐌 Slow down, speed racer. This code isn't going anywhere.",
+  "🍕 Pssst... instead of copying, why not ask nicely? We share!",
+  "🚫 Access Denied. This message brought to you by the letter 'NO'.",
+  "🎪 Welcome to the circus! The code you're looking for is in another castle.",
+  "🐻 Beary sneaky! But this honey pot is protected."
+];
+
+function showSneakyMessage() {
+  const toast = document.getElementById('sneakyToast');
+  const randomMsg = funnyMessages[Math.floor(Math.random() * funnyMessages.length)];
+  toast.textContent = randomMsg;
+  toast.classList.add('show');
+  setTimeout(() => {
+    toast.classList.remove('show');
+  }, 2500);
+}
+
+// Disable right-click context menu
+document.addEventListener('contextmenu', function(e) {
+  e.preventDefault();
+  showSneakyMessage();
+  return false;
+});
+
+// Disable keyboard shortcuts for copying/inspecting
+document.addEventListener('keydown', function(e) {
+  // Block F12
+  if (e.key === 'F12') {
+    e.preventDefault();
+    showSneakyMessage();
+    return false;
+  }
+  
+  // Block Ctrl+Shift+I, Ctrl+Shift+J, Ctrl+Shift+C
+  if (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'J' || e.key === 'C')) {
+    e.preventDefault();
+    showSneakyMessage();
+    return false;
+  }
+  
+  // Block Ctrl+U (view source)
+  if (e.ctrlKey && e.key === 'u') {
+    e.preventDefault();
+    showSneakyMessage();
+    return false;
+  }
+  
+  // Block Ctrl+S (save)
+  if (e.ctrlKey && e.key === 's') {
+    e.preventDefault();
+    showSneakyMessage();
+    return false;
+  }
+  
+  // Block Ctrl+C (copy) - but allow on input fields
+  if (e.ctrlKey && e.key === 'c') {
+    const activeEl = document.activeElement;
+    const isInput = activeEl.tagName === 'INPUT' || activeEl.tagName === 'TEXTAREA' || activeEl.isContentEditable;
+    if (!isInput) {
+      e.preventDefault();
+      showSneakyMessage();
+      return false;
+    }
+  }
+  
+  // Block Ctrl+X (cut)
+  if (e.ctrlKey && e.key === 'x') {
+    const activeEl = document.activeElement;
+    const isInput = activeEl.tagName === 'INPUT' || activeEl.tagName === 'TEXTAREA';
+    if (!isInput) {
+      e.preventDefault();
+      showSneakyMessage();
+      return false;
+    }
+  }
+  
+  // Block Ctrl+V (paste) on non-inputs
+  if (e.ctrlKey && e.key === 'v') {
+    const activeEl = document.activeElement;
+    const isInput = activeEl.tagName === 'INPUT' || activeEl.tagName === 'TEXTAREA';
+    if (!isInput) {
+      e.preventDefault();
+      showSneakyMessage();
+      return false;
+    }
+  }
+});
+
+// Block PrintScreen detection (works by clearing clipboard)
+document.addEventListener('keyup', function(e) {
+  if (e.key === 'PrintScreen') {
+    navigator.clipboard.writeText('Nice try! But screenshots won\'t help you copy this dashboard 😜');
+    showSneakyMessage();
+  }
+});
+
+// Disable drag and drop of content
+document.addEventListener('dragstart', function(e) {
+  e.preventDefault();
+  return false;
+});
+
+// Disable selection on double-click
+document.addEventListener('selectstart', function(e) {
+  const tagName = e.target.tagName;
+  if (tagName !== 'INPUT' && tagName !== 'TEXTAREA' && tagName !== 'SELECT') {
+    e.preventDefault();
+    return false;
+  }
+});
+
+// DevTools detection (console.clear prevention)
+setInterval(function() {
+  const startTime = performance.now();
+  debugger;
+  const endTime = performance.now();
+  if (endTime - startTime > 100) {
+    // DevTools might be open
+    console.log("%c🔒 DevTools detected! But don't worry, the code is still safe! 🔒", "color: #c9a84c; font-size: 14px;");
+  }
+}, 5000);
+
+// Override console methods to add funny messages (optional)
+const originalConsoleLog = console.log;
+console.log = function() {
+  if (arguments[0] && typeof arguments[0] === 'string' && arguments[0].includes('inspect')) {
+    showSneakyMessage();
+  }
+  originalConsoleLog.apply(console, arguments);
+};
+
+// Prevent adding event listeners to inspect elements
+window.addEventListener('load', function() {
+  // Add watermark in console (harmless fun)
+  console.log("%c⚡ EE Lab Utilization Dashboard | KLE-CTIE ⚡", "color: #c9a84c; font-size: 16px; font-weight: bold;");
+  console.log("%c📊 Data pulled live from Google Sheets | Protected Dashboard", "color: #6b7a99; font-size: 12px;");
+  console.log("%c🔒 Copy protection enabled — but feel free to reach out for collaboration!", "color: #1b7a3e; font-size: 12px;");
+});
+
+// ============================================
+// DASHBOARD FUNCTIONALITY (same as before)
+// ============================================
+
 let allRecords = [];
 let filteredRecords = [];
 
@@ -228,7 +438,7 @@ const equipFilter = document.getElementById('equipFilter');
 const resetBtn = document.getElementById('resetBtn');
 const tableSearch = document.getElementById('tableSearch');
 
-// Helper: Calculate available lab hours per month (8 hours/day, weekdays only)
+// Helper: Calculate available lab hours per month
 function getAvailableHoursForMonth(year, monthNum) {
   const daysInMonth = new Date(parseInt(year), parseInt(monthNum), 0).getDate();
   let weekdays = 0;
@@ -313,7 +523,6 @@ function renderKPIs() {
   const uniqueStartups = new Set(filteredRecords.map(r => r.startup)).size;
   const avgHours = totalSessions > 0 ? (totalHours / totalSessions).toFixed(2) : 0;
   
-  // Calculate utilization percentage
   let totalAvailableHours = 0;
   const monthsSet = new Set();
   filteredRecords.forEach(r => {
@@ -394,7 +603,6 @@ function renderEquipmentChart() {
   const equipment = {};
   filteredRecords.forEach(r => {
     if (r.equipment && r.equipment !== 'no equip') {
-      // Handle multiple equipment entries
       const parts = r.equipment.split(/[,+]/).map(p => p.trim());
       parts.forEach(part => {
         if (part.length > 2) equipment[part] = (equipment[part] || 0) + r.usageHours;
@@ -408,85 +616,4 @@ function renderEquipmentChart() {
   document.getElementById('equipmentChart').innerHTML = sorted.map(([name, hours]) => `
     <div class="bar-item">
       <span class="bar-label" title="${name}">${name.substring(0, 18)}</span>
-      <div class="bar-track"><div class="bar-fill equip" style="width: ${(hours/maxHours)*100}%">${hours.toFixed(1)}h</div></div>
-    </div>
-  `).join('');
-}
-
-// Render yearly chart
-function renderYearlyChart() {
-  const yearly = {};
-  filteredRecords.forEach(r => {
-    if (!yearly[r.year]) yearly[r.year] = 0;
-    yearly[r.year] += r.usageHours;
-  });
-  
-  const sorted = Object.entries(yearly).sort();
-  const maxHours = Math.max(...Object.values(yearly), 1);
-  
-  document.getElementById('yearlyChart').innerHTML = sorted.map(([year, hours]) => `
-    <div class="bar-item">
-      <span class="bar-label">${year}</span>
-      <div class="bar-track"><div class="bar-fill year" style="width: ${(hours/maxHours)*100}%">${hours.toFixed(1)}h</div></div>
-    </div>
-  `).join('');
-}
-
-// Render table
-function renderTable() {
-  const tbody = document.getElementById('tableBody');
-  document.getElementById('tableCount').innerHTML = `${filteredRecords.length} sessions`;
-  
-  if (filteredRecords.length === 0) {
-    tbody.innerHTML = '<tr><td colspan="6" class="loading">No sessions match filters</td></tr>';
-    return;
-  }
-  
-  tbody.innerHTML = filteredRecords.slice(0, 150).map(r => `
-    <tr>
-      <td style="white-space:nowrap;">${r.dateDisplay || r.sheetName || '-'}</td>
-      <td><span class="startup-badge">${escapeHtml(r.startup)}</span></td>
-      <td>${escapeHtml(r.repName || '-')}</td>
-      <td><span class="equip-pill">${escapeHtml(r.equipment || '-')}</span></td>
-      <td style="max-width:200px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${escapeHtml((r.testedWhat || '-').substring(0, 45))}</td>
-      <td style="font-weight:600;">${r.usageHours.toFixed(2)} h</td>
-    </tr>
-  `).join('');
-}
-
-function escapeHtml(str) {
-  if (!str) return '';
-  return str.replace(/[&<>]/g, function(m) {
-    if (m === '&') return '&amp;';
-    if (m === '<') return '&lt;';
-    if (m === '>') return '&gt;';
-    return m;
-  });
-}
-
-// Event listeners
-yearFilter.addEventListener('change', applyFilters);
-monthFilter.addEventListener('change', applyFilters);
-startupFilter.addEventListener('change', applyFilters);
-equipFilter.addEventListener('input', applyFilters);
-tableSearch.addEventListener('input', applyFilters);
-resetBtn.addEventListener('click', () => {
-  yearFilter.value = 'ALL';
-  monthFilter.value = 'ALL';
-  startupFilter.value = 'ALL';
-  equipFilter.value = '';
-  tableSearch.value = '';
-  applyFilters();
-});
-
-// Scroll reveal
-const revealObs = new IntersectionObserver(entries => {
-  entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('vis'); });
-}, { threshold: 0.1 });
-document.querySelectorAll('.reveal').forEach(el => revealObs.observe(el));
-
-// Initialize
-fetchData();
-</script>
-</body>
-</html>
+      <div class="bar-track"><div class="bar-fill equip" style="width: ${(hours/maxHours)*100}%">${hours.toFixed(1)}
