@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 <title>EE Lab Utilization Dashboard · KLE-CTIE</title>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=Outfit:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
@@ -20,6 +20,22 @@
 html{scroll-behavior:smooth;}
 body{font-family:'Outfit',sans-serif;background:var(--soft);color:var(--text);padding-bottom:calc(var(--footer-h)+1rem);}
 
+/* Disable text selection globally (except inputs) */
+* {
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+input, select, textarea {
+  -webkit-user-select: text;
+  -moz-user-select: text;
+  -ms-user-select: text;
+  user-select: text;
+}
+
 /* STICKY FOOTER */
 .sticky-footer{
   position:fixed;bottom:0;left:0;right:0;height:var(--footer-h);
@@ -28,6 +44,17 @@ body{font-family:'Outfit',sans-serif;background:var(--soft);color:var(--text);pa
 }
 .sticky-footer span{font-size:11px;color:rgba(255,255,255,0.4);letter-spacing:0.06em;}
 .sticky-footer b{color:var(--gold);font-weight:400;font-style:italic;}
+
+/* Sneaky Toast Message */
+#sneakyToast{
+  position:fixed;bottom:80px;left:50%;transform:translateX(-50%);
+  background:var(--navy);color:var(--gold);padding:12px 24px;
+  border-radius:40px;font-family:'JetBrains Mono',monospace;font-size:13px;
+  font-weight:500;z-index:9999;box-shadow:0 8px 32px rgba(0,0,0,0.2);
+  border:1px solid rgba(201,168,76,0.3);backdrop-filter:blur(8px);
+  white-space:nowrap;pointer-events:none;opacity:0;transition:opacity 0.3s ease;
+}
+#sneakyToast.show{opacity:1;}
 
 /* HEADER */
 .header{background:var(--navy);padding:2.5rem 2rem 2rem;position:relative;overflow:hidden;}
@@ -100,14 +127,20 @@ section{margin-bottom:3rem;}
 .bar-fill.year{background:linear-gradient(90deg,var(--brown),#a0522d);}
 .bar-percent{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--muted);min-width:45px;text-align:right;}
 
-/* TABLE WRAPPER */
+/* TABLE WRAPPER WITH SCROLL */
 .table-wrap{background:var(--white);border-radius:16px;overflow:hidden;border:1px solid var(--border);box-shadow:var(--shadow);}
 .table-toolbar{padding:0.9rem 1.25rem;border-bottom:1px solid var(--border);display:flex;gap:10px;align-items:center;flex-wrap:wrap;}
 .search-input{flex:1;min-width:200px;border:1px solid var(--border);border-radius:10px;padding:7px 12px;font-size:12px;font-family:'Outfit',sans-serif;outline:none;color:var(--text);background:var(--cream);}
 .search-input:focus{border-color:var(--gold);}
 .table-count{font-size:12px;color:var(--muted);white-space:nowrap;}
+
+/* Scrollable table container - shows ~12 rows */
+.table-container{max-height:520px;overflow-y:auto;overflow-x:auto;}
+.scroll-hint{font-size:10px;color:var(--muted);text-align:right;padding:0.5rem 1.25rem;display:flex;align-items:center;justify-content:flex-end;gap:8px;border-bottom:1px solid var(--border);}
+.scroll-hint span{display:inline-flex;align-items:center;gap:4px;}
+
 table{width:100%;border-collapse:collapse;font-size:12px;}
-thead th{background:var(--navy);color:rgba(255,255,255,0.65);font-size:10px;font-weight:500;letter-spacing:0.07em;text-transform:uppercase;padding:10px 12px;text-align:left;}
+thead th{background:var(--navy);color:rgba(255,255,255,0.65);font-size:10px;font-weight:500;letter-spacing:0.07em;text-transform:uppercase;padding:10px 12px;text-align:left;position:sticky;top:0;z-index:10;}
 tbody tr{border-bottom:1px solid var(--border);transition:background 0.15s;}
 tbody tr:hover{background:var(--cream);}
 td{padding:9px 12px;vertical-align:middle;}
@@ -117,8 +150,6 @@ td{padding:9px 12px;vertical-align:middle;}
 /* REVEAL ANIMATION */
 .reveal{opacity:0;transform:translateY(20px);transition:opacity 0.6s ease,transform 0.6s ease;}
 .reveal.vis{opacity:1;transform:translateY(0);}
-
-/* LOADING STATE */
 .loading{text-align:center;padding:3rem;color:var(--muted);font-family:'Outfit',sans-serif;}
 
 @media(max-width:768px){
@@ -130,6 +161,9 @@ td{padding:9px 12px;vertical-align:middle;}
 </style>
 </head>
 <body>
+
+<!-- Sneaky Toast Container -->
+<div id="sneakyToast"></div>
 
 <div class="sticky-footer">
   <span>Made with ❤ ~rhc &nbsp;<b>·</b>&nbsp; EE Lab, KLE-CTIE &nbsp;<b>·</b>&nbsp; EE Lab Utilization Report</span>
@@ -189,7 +223,7 @@ td{padding:9px 12px;vertical-align:middle;}
     </div>
   </section>
 
-  <!-- SESSIONS TABLE -->
+  <!-- SESSIONS TABLE WITH SCROLL -->
   <section class="reveal">
     <div class="sec-label"><span class="sec-num">02</span><div class="sec-line"></div></div>
     <div class="sec-title">Session <em>Logs</em></div>
@@ -199,13 +233,17 @@ td{padding:9px 12px;vertical-align:middle;}
         <input class="search-input" id="tableSearch" type="text" placeholder="Search startup, equipment, rep...">
         <span class="table-count" id="tableCount"></span>
       </div>
-      <div style="overflow-x:auto;">
-        <table>
+      <div class="scroll-hint">
+        <span>👇 Scroll down to see more sessions (12+ rows)</span>
+        <span>⬅️ ➡️ Scroll sideways for all columns</span>
+      </div>
+      <div class="table-container">
+        <table id="sessionsTable">
           <thead>
-            <tr><th>Date</th><th>Startup</th><th>Representative</th><th>Equipment Used</th><th>Tested What</th><th>Hours</th></tr>
+            <tr><th>#</th><th>Date</th><th>Startup</th><th>Representative</th><th>Equipment Used</th><th>Tested What</th><th>Hours</th></tr>
           </thead>
           <tbody id="tableBody">
-            <tr><td colspan="6" class="loading">Connecting to EE Lab...</td></tr>
+            <tr><td colspan="7" class="loading">Connecting to EE Lab...</td></tr>
           </tbody>
         </table>
       </div>
@@ -214,6 +252,148 @@ td{padding:9px 12px;vertical-align:middle;}
 </div>
 
 <script>
+// ============================================
+// COPY PROTECTION & FUNNY MESSAGES
+// ============================================
+
+const funnyMessages = [
+  "🕵️‍♂️ Oops! Nice try, but this dashboard is like a secret recipe — not for copying!",
+  "🍪 No cookies for script kiddies! This code is locked 🔒",
+  "🐧 Peeking won't help. The real magic happens on our servers!",
+  "🎣 Fishing for code? Catch and release — back to work!",
+  "👻 Boo! Nothing to see here. Go build your own dashboard!",
+  "🤖 I'm not a robot, but you sure are acting like one!",
+  "📸 Taking a screenshot? Don't forget to smile! 😁",
+  "🧙‍♂️ These aren't the droids you're looking for... move along!",
+  "🐱‍👤 Nice try, hacker cat! But this dashboard is protected.",
+  "💀 You've entered the restricted zone. Turn back now!",
+  "🎭 Ctrl+C? More like Ctrl+CAN'T!",
+  "🔍 Inspect Element? More like INSPECT-YOUR-OWN-PROJECT!",
+  "📋 Copy-paste warriors, meet your match! 🛡️",
+  "🐌 Slow down, speed racer. This code isn't going anywhere.",
+  "🍕 Pssst... instead of copying, why not ask nicely? We share!",
+  "🚫 Access Denied. This message brought to you by the letter 'NO'.",
+  "🎪 Welcome to the circus! The code you're looking for is in another castle.",
+  "🐻 Beary sneaky! But this honey pot is protected.",
+  "🔒 This dashboard is like a vault — no trespassing!",
+  "👮‍♂️ You have been warned. This is a no-copy zone!"
+];
+
+function showSneakyMessage() {
+  const toast = document.getElementById('sneakyToast');
+  const randomMsg = funnyMessages[Math.floor(Math.random() * funnyMessages.length)];
+  toast.textContent = randomMsg;
+  toast.classList.add('show');
+  setTimeout(() => {
+    toast.classList.remove('show');
+  }, 2500);
+}
+
+// Disable right-click context menu
+document.addEventListener('contextmenu', function(e) {
+  e.preventDefault();
+  showSneakyMessage();
+  return false;
+});
+
+// Disable keyboard shortcuts for copying/inspecting
+document.addEventListener('keydown', function(e) {
+  // Block F12
+  if (e.key === 'F12') {
+    e.preventDefault();
+    showSneakyMessage();
+    return false;
+  }
+  
+  // Block Ctrl+Shift+I, Ctrl+Shift+J, Ctrl+Shift+C
+  if (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'J' || e.key === 'C')) {
+    e.preventDefault();
+    showSneakyMessage();
+    return false;
+  }
+  
+  // Block Ctrl+U (view source)
+  if (e.ctrlKey && e.key === 'u') {
+    e.preventDefault();
+    showSneakyMessage();
+    return false;
+  }
+  
+  // Block Ctrl+S (save)
+  if (e.ctrlKey && e.key === 's') {
+    e.preventDefault();
+    showSneakyMessage();
+    return false;
+  }
+  
+  // Block Ctrl+C (copy) - but allow on input fields
+  if (e.ctrlKey && e.key === 'c') {
+    const activeEl = document.activeElement;
+    const isInput = activeEl.tagName === 'INPUT' || activeEl.tagName === 'TEXTAREA' || activeEl.isContentEditable;
+    if (!isInput) {
+      e.preventDefault();
+      showSneakyMessage();
+      return false;
+    }
+  }
+  
+  // Block Ctrl+X (cut)
+  if (e.ctrlKey && e.key === 'x') {
+    const activeEl = document.activeElement;
+    const isInput = activeEl.tagName === 'INPUT' || activeEl.tagName === 'TEXTAREA';
+    if (!isInput) {
+      e.preventDefault();
+      showSneakyMessage();
+      return false;
+    }
+  }
+  
+  // Block Ctrl+V (paste) on non-inputs
+  if (e.ctrlKey && e.key === 'v') {
+    const activeEl = document.activeElement;
+    const isInput = activeEl.tagName === 'INPUT' || activeEl.tagName === 'TEXTAREA';
+    if (!isInput) {
+      e.preventDefault();
+      showSneakyMessage();
+      return false;
+    }
+  }
+  
+  // Block Ctrl+P (print)
+  if (e.ctrlKey && e.key === 'p') {
+    e.preventDefault();
+    showSneakyMessage();
+    return false;
+  }
+});
+
+// Block PrintScreen detection
+document.addEventListener('keyup', function(e) {
+  if (e.key === 'PrintScreen') {
+    navigator.clipboard.writeText('Nice try! But screenshots won\'t help you copy this dashboard 😜');
+    showSneakyMessage();
+  }
+});
+
+// Disable drag and drop of content
+document.addEventListener('dragstart', function(e) {
+  e.preventDefault();
+  return false;
+});
+
+// Disable selection on double-click (except inputs)
+document.addEventListener('selectstart', function(e) {
+  const tagName = e.target.tagName;
+  if (tagName !== 'INPUT' && tagName !== 'TEXTAREA' && tagName !== 'SELECT') {
+    e.preventDefault();
+    return false;
+  }
+});
+
+// ============================================
+// DASHBOARD FUNCTIONALITY
+// ============================================
+
 // 🔴 IMPORTANT: Replace with your deployed Google Apps Script URL
 const GAS_URL = "https://script.google.com/macros/s/AKfycby4wDb_SU1jgvfZFiMxX6ZiDMmIrxU0hcgqrVpmFLZKjr8xke5vinC69Mydg6WZRnWB5Q/exec";
 
@@ -255,7 +435,7 @@ async function fetchData() {
     applyFilters();
   } catch (error) {
     document.getElementById('lastUpdated').innerHTML = '⚠️ Error';
-    document.getElementById('tableBody').innerHTML = `<tr><td colspan="6" class="loading">Error: ${error.message}. Check GAS deployment.</td></tr>`;
+    document.getElementById('tableBody').innerHTML = `<tr><td colspan="7" class="loading">Error: ${error.message}. Check GAS deployment.</td></tr>`;
     console.error(error);
   }
 }
@@ -313,7 +493,6 @@ function renderKPIs() {
   const uniqueStartups = new Set(filteredRecords.map(r => r.startup)).size;
   const avgHours = totalSessions > 0 ? (totalHours / totalSessions).toFixed(2) : 0;
   
-  // Calculate utilization percentage
   let totalAvailableHours = 0;
   const monthsSet = new Set();
   filteredRecords.forEach(r => {
@@ -327,11 +506,7 @@ function renderKPIs() {
   });
   
   const utilizationPct = totalAvailableHours > 0 ? (totalHours / totalAvailableHours) * 100 : 0;
-  
-  let utilClass = '';
-  if (utilizationPct >= 30) utilClass = 'util-highlight';
-  else if (utilizationPct >= 15) utilClass = 'util-warning';
-  else utilClass = 'util-critical';
+  let utilClass = utilizationPct >= 30 ? 'util-highlight' : (utilizationPct >= 15 ? 'util-warning' : 'util-critical');
   
   document.getElementById('kpiGrid').innerHTML = `
     <div class="kpi-card"><div class="kpi-label">Total Sessions</div><div class="kpi-value">${totalSessions}</div><div class="kpi-sub">records</div></div>
@@ -394,7 +569,6 @@ function renderEquipmentChart() {
   const equipment = {};
   filteredRecords.forEach(r => {
     if (r.equipment && r.equipment !== 'no equip') {
-      // Handle multiple equipment entries
       const parts = r.equipment.split(/[,+]/).map(p => p.trim());
       parts.forEach(part => {
         if (part.length > 2) equipment[part] = (equipment[part] || 0) + r.usageHours;
@@ -432,25 +606,31 @@ function renderYearlyChart() {
   `).join('');
 }
 
-// Render table
+// Counter for row numbers
+let rowCounter = 1;
+
+// Render table with scroll (shows all records, scrollable)
 function renderTable() {
   const tbody = document.getElementById('tableBody');
   document.getElementById('tableCount').innerHTML = `${filteredRecords.length} sessions`;
   
   if (filteredRecords.length === 0) {
-    tbody.innerHTML = '<tr><td colspan="6" class="loading">No sessions match filters</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="7" class="loading">No sessions match filters</td></tr>';
     return;
   }
   
-  tbody.innerHTML = filteredRecords.slice(0, 150).map(r => `
+  // Reset counter and show all records (scrollable)
+  rowCounter = 1;
+  tbody.innerHTML = filteredRecords.map(r => `
     <tr>
+      <td style="color:var(--muted); width:40px;">${rowCounter++}</td>
       <td style="white-space:nowrap;">${r.dateDisplay || r.sheetName || '-'}</td>
       <td><span class="startup-badge">${escapeHtml(r.startup)}</span></td>
       <td>${escapeHtml(r.repName || '-')}</td>
       <td><span class="equip-pill">${escapeHtml(r.equipment || '-')}</span></td>
-      <td style="max-width:200px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${escapeHtml((r.testedWhat || '-').substring(0, 45))}</td>
-      <td style="font-weight:600;">${r.usageHours.toFixed(2)} h</td>
-    </tr>
+      <td style="max-width:200px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" title="${escapeHtml(r.testedWhat || '-')}">${escapeHtml((r.testedWhat || '-').substring(0, 45))}</td>
+      <td style="font-weight:600; width:70px;">${r.usageHours.toFixed(2)} h</td>
+    </table>
   `).join('');
 }
 
@@ -487,6 +667,10 @@ document.querySelectorAll('.reveal').forEach(el => revealObs.observe(el));
 
 // Initialize
 fetchData();
+
+// Console watermark (fun)
+console.log("%c⚡ EE Lab Utilization Dashboard | KLE-CTIE ⚡", "color: #c9a84c; font-size: 14px; font-weight: bold;");
+console.log("%c🔒 Copy protection enabled — This dashboard is protected!", "color: #1b7a3e; font-size: 12px;");
 </script>
 </body>
 </html>
