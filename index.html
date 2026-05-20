@@ -419,6 +419,15 @@ function getAvailableHoursForMonth(year, monthNum) {
   return weekdays * 8;
 }
 
+// Helper function to format date as DD-MMM-YYYY
+function formatDateToDDMMMYYYY(date) {
+  const day = date.getDate().toString().padStart(2, '0');
+  const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+  const month = months[date.getMonth()];
+  const year = date.getFullYear();
+  return `${day}-${month}-${year}`;
+}
+
 // Fetch data from GAS
 async function fetchData() {
   try {
@@ -429,13 +438,13 @@ async function fetchData() {
     if (!data.ok) throw new Error(data.error || 'Failed to fetch');
     
     allRecords = data.records;
-    document.getElementById('lastUpdated').innerHTML = new Date().toLocaleString();
+    document.getElementById('lastUpdated').innerHTML = formatDateToDDMMMYYYY(new Date());
     
     populateFilters();
     applyFilters();
   } catch (error) {
     document.getElementById('lastUpdated').innerHTML = '⚠️ Error';
-    document.getElementById('tableBody').innerHTML = `<tr><td colspan="7" class="loading">Error: ${error.message}. Check GAS deployment.</td></tr>`;
+    document.getElementById('tableBody').innerHTML = `<td><td colspan="7" class="loading">Error: ${error.message}. Check GAS deployment.</td></tr>`;
     console.error(error);
   }
 }
