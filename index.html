@@ -70,6 +70,7 @@ input, select, textarea {
 .header-title{font-family:'Cormorant Garamond',serif;font-size:clamp(26px,5vw,48px);font-weight:600;color:var(--white);line-height:1.1;margin-bottom:0.3rem;}
 .header-title span{color:var(--gold);font-style:italic;}
 .header-sub{font-size:13px;color:rgba(255,255,255,0.4);margin-bottom:1.25rem;}
+.timing-sub{font-size:11px;margin-top:4px;color:rgba(255,255,255,0.7);}
 .gold-bar{height:3px;background:linear-gradient(to right,var(--gold),var(--gold-l),var(--gold));border-radius:2px;max-width:280px;}
 .header-right{text-align:right;}
 .header-ts{font-size:11px;color:rgba(255,255,255,0.3);font-family:'JetBrains Mono',monospace;}
@@ -101,6 +102,7 @@ input, select, textarea {
 .util-highlight{color:var(--green);}
 .util-warning{color:var(--amber);}
 .util-critical{color:var(--red);}
+.lost-hours{color:var(--red);}
 
 /* SECTION HEADERS */
 .sec-label{display:flex;align-items:center;gap:10px;margin-bottom:0.75rem;}
@@ -133,12 +135,8 @@ section{margin-bottom:3rem;}
 .search-input{flex:1;min-width:200px;border:1px solid var(--border);border-radius:10px;padding:7px 12px;font-size:12px;font-family:'Outfit',sans-serif;outline:none;color:var(--text);background:var(--cream);}
 .search-input:focus{border-color:var(--gold);}
 .table-count{font-size:12px;color:var(--muted);white-space:nowrap;}
-
-/* Scrollable table container - shows ~12 rows */
 .table-container{max-height:520px;overflow-y:auto;overflow-x:auto;}
 .scroll-hint{font-size:10px;color:var(--muted);text-align:right;padding:0.5rem 1.25rem;display:flex;align-items:center;justify-content:flex-end;gap:8px;border-bottom:1px solid var(--border);}
-.scroll-hint span{display:inline-flex;align-items:center;gap:4px;}
-
 table{width:100%;border-collapse:collapse;font-size:12px;}
 thead th{background:var(--navy);color:rgba(255,255,255,0.65);font-size:10px;font-weight:500;letter-spacing:0.07em;text-transform:uppercase;padding:10px 12px;text-align:left;position:sticky;top:0;z-index:10;}
 tbody tr{border-bottom:1px solid var(--border);transition:background 0.15s;}
@@ -175,9 +173,9 @@ td{padding:9px 12px;vertical-align:middle;}
     <div class="header-left">
       <div class="eyebrow">EE LAB · KLE-CTIE · Utilization Analytics</div>
       <div class="header-title">EE Lab <span>Utilization</span><br>Dashboard</div>
-<div class="header-sub">Equipment usage · Startup-wise trends · Monthly Utilization · 2022–2026</div>
-<div class="header-sub" style="font-size: 11px; margin-top: 4px; color: var(--gold);">⏰ EE Lab Timings · Mon-Fri: 10am to 6pm · Sat: 10am to 2pm</div>
-<div class="gold-bar"></div>
+      <div class="header-sub">Equipment usage · Startup-wise trends · Monthly utilization · 2022–2026</div>
+      <div class="timing-sub">⏰ EE Lab Timings · Mon-Fri: 10am to 6pm · Sat: 10am to 2pm (from Nov 2024) · Prior: Mon-Fri 10am-5pm, Sat 10am-1pm</div>
+      <div class="gold-bar"></div>
     </div>
     <div class="header-right">
       <div class="header-ts">Last updated<br><span id="lastUpdated">—</span></div>
@@ -285,111 +283,23 @@ function showSneakyMessage() {
   const randomMsg = funnyMessages[Math.floor(Math.random() * funnyMessages.length)];
   toast.textContent = randomMsg;
   toast.classList.add('show');
-  setTimeout(() => {
-    toast.classList.remove('show');
-  }, 2500);
+  setTimeout(() => toast.classList.remove('show'), 2500);
 }
 
-// Disable right-click context menu
-document.addEventListener('contextmenu', function(e) {
-  e.preventDefault();
-  showSneakyMessage();
-  return false;
+document.addEventListener('contextmenu', (e) => { e.preventDefault(); showSneakyMessage(); return false; });
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'F12') { e.preventDefault(); showSneakyMessage(); return false; }
+  if (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'J' || e.key === 'C')) { e.preventDefault(); showSneakyMessage(); return false; }
+  if (e.ctrlKey && e.key === 'u') { e.preventDefault(); showSneakyMessage(); return false; }
+  if (e.ctrlKey && e.key === 's') { e.preventDefault(); showSneakyMessage(); return false; }
+  if (e.ctrlKey && e.key === 'c' && !['INPUT','TEXTAREA','SELECT'].includes(document.activeElement.tagName)) { e.preventDefault(); showSneakyMessage(); return false; }
+  if (e.ctrlKey && e.key === 'x' && !['INPUT','TEXTAREA'].includes(document.activeElement.tagName)) { e.preventDefault(); showSneakyMessage(); return false; }
+  if (e.ctrlKey && e.key === 'v' && !['INPUT','TEXTAREA'].includes(document.activeElement.tagName)) { e.preventDefault(); showSneakyMessage(); return false; }
+  if (e.ctrlKey && e.key === 'p') { e.preventDefault(); showSneakyMessage(); return false; }
 });
-
-// Disable keyboard shortcuts for copying/inspecting
-document.addEventListener('keydown', function(e) {
-  // Block F12
-  if (e.key === 'F12') {
-    e.preventDefault();
-    showSneakyMessage();
-    return false;
-  }
-  
-  // Block Ctrl+Shift+I, Ctrl+Shift+J, Ctrl+Shift+C
-  if (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'J' || e.key === 'C')) {
-    e.preventDefault();
-    showSneakyMessage();
-    return false;
-  }
-  
-  // Block Ctrl+U (view source)
-  if (e.ctrlKey && e.key === 'u') {
-    e.preventDefault();
-    showSneakyMessage();
-    return false;
-  }
-  
-  // Block Ctrl+S (save)
-  if (e.ctrlKey && e.key === 's') {
-    e.preventDefault();
-    showSneakyMessage();
-    return false;
-  }
-  
-  // Block Ctrl+C (copy) - but allow on input fields
-  if (e.ctrlKey && e.key === 'c') {
-    const activeEl = document.activeElement;
-    const isInput = activeEl.tagName === 'INPUT' || activeEl.tagName === 'TEXTAREA' || activeEl.isContentEditable;
-    if (!isInput) {
-      e.preventDefault();
-      showSneakyMessage();
-      return false;
-    }
-  }
-  
-  // Block Ctrl+X (cut)
-  if (e.ctrlKey && e.key === 'x') {
-    const activeEl = document.activeElement;
-    const isInput = activeEl.tagName === 'INPUT' || activeEl.tagName === 'TEXTAREA';
-    if (!isInput) {
-      e.preventDefault();
-      showSneakyMessage();
-      return false;
-    }
-  }
-  
-  // Block Ctrl+V (paste) on non-inputs
-  if (e.ctrlKey && e.key === 'v') {
-    const activeEl = document.activeElement;
-    const isInput = activeEl.tagName === 'INPUT' || activeEl.tagName === 'TEXTAREA';
-    if (!isInput) {
-      e.preventDefault();
-      showSneakyMessage();
-      return false;
-    }
-  }
-  
-  // Block Ctrl+P (print)
-  if (e.ctrlKey && e.key === 'p') {
-    e.preventDefault();
-    showSneakyMessage();
-    return false;
-  }
-});
-
-// Block PrintScreen detection
-document.addEventListener('keyup', function(e) {
-  if (e.key === 'PrintScreen') {
-    navigator.clipboard.writeText('Nice try! But screenshots won\'t help you copy this dashboard 😜');
-    showSneakyMessage();
-  }
-});
-
-// Disable drag and drop of content
-document.addEventListener('dragstart', function(e) {
-  e.preventDefault();
-  return false;
-});
-
-// Disable selection on double-click (except inputs)
-document.addEventListener('selectstart', function(e) {
-  const tagName = e.target.tagName;
-  if (tagName !== 'INPUT' && tagName !== 'TEXTAREA' && tagName !== 'SELECT') {
-    e.preventDefault();
-    return false;
-  }
-});
+document.addEventListener('keyup', (e) => { if (e.key === 'PrintScreen') { navigator.clipboard.writeText('Screenshots disabled 😜'); showSneakyMessage(); } });
+document.addEventListener('dragstart', (e) => e.preventDefault());
+document.addEventListener('selectstart', (e) => { if (!['INPUT','TEXTAREA','SELECT'].includes(e.target.tagName)) e.preventDefault(); });
 
 // ============================================
 // DASHBOARD FUNCTIONALITY
@@ -400,6 +310,7 @@ const GAS_URL = "https://script.google.com/macros/s/AKfycby4wDb_SU1jgvfZFiMxX6Zi
 
 let allRecords = [];
 let filteredRecords = [];
+let rowCounter = 1;
 
 // DOM elements
 const yearFilter = document.getElementById('yearFilter');
@@ -409,45 +320,7 @@ const equipFilter = document.getElementById('equipFilter');
 const resetBtn = document.getElementById('resetBtn');
 const tableSearch = document.getElementById('tableSearch');
 
-// Helper: Calculate available lab hours per month (8 hours/day, weekdays only)
-function getAvailableHoursForMonth(year, monthNum) {
-  const yearNum = parseInt(year);
-  const monthNumInt = parseInt(monthNum);
-  const daysInMonth = new Date(yearNum, monthNumInt, 0).getDate();
-  let totalHours = 0;
-  
-  // Cutoff date for timing change: November 1, 2024
-  const cutoffDate = new Date(2024, 10, 1); // Nov 1, 2024 (month is 0-indexed)
-  const currentMonthDate = new Date(yearNum, monthNumInt - 1, 1);
-  const isNewTiming = currentMonthDate >= cutoffDate;
-  
-  // Define timings based on period
-  let weekdayHours, saturdayHours;
-  if (isNewTiming) {
-    // From Nov 2024 onwards: Mon-Fri 10am-6pm (8 hrs), Sat 10am-2pm (4 hrs)
-    weekdayHours = 8;  // 10am to 6pm
-    saturdayHours = 4; // 10am to 2pm
-  } else {
-    // Oct 2022 to Oct 2024: Mon-Fri 10am-5pm (7 hrs), Sat 10am-1pm (3 hrs)
-    weekdayHours = 7;  // 10am to 5pm
-    saturdayHours = 3; // 10am to 1pm
-  }
-  
-  for (let d = 1; d <= daysInMonth; d++) {
-    const day = new Date(yearNum, monthNumInt - 1, d).getDay();
-    if (day !== 0) { // Not Sunday (Sunday = 0)
-      if (day === 6) { // Saturday
-        totalHours += saturdayHours;
-      } else { // Monday to Friday
-        totalHours += weekdayHours;
-      }
-    }
-  }
-  
-  return totalHours;
-}
-
-// Helper function to format date as DD-MMM-YYYY
+// Helper: format date DD-MMM-YYYY
 function formatDateToDDMMMYYYY(date) {
   const day = date.getDate().toString().padStart(2, '0');
   const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
@@ -456,23 +329,51 @@ function formatDateToDDMMMYYYY(date) {
   return `${day}-${month}-${year}`;
 }
 
+// Accurate lab hours based on historical timings
+function getAvailableHoursForMonth(year, monthNum) {
+  const yearNum = parseInt(year);
+  const monthNumInt = parseInt(monthNum);
+  const daysInMonth = new Date(yearNum, monthNumInt, 0).getDate();
+  let totalHours = 0;
+  
+  // Cutoff date for timing change: November 1, 2024
+  const cutoffDate = new Date(2024, 10, 1);
+  const currentMonthDate = new Date(yearNum, monthNumInt - 1, 1);
+  const isNewTiming = currentMonthDate >= cutoffDate;
+  
+  let weekdayHours, saturdayHours;
+  if (isNewTiming) {
+    weekdayHours = 8;  // 10am-6pm
+    saturdayHours = 4; // 10am-2pm
+  } else {
+    weekdayHours = 7;  // 10am-5pm
+    saturdayHours = 3; // 10am-1pm
+  }
+  
+  for (let d = 1; d <= daysInMonth; d++) {
+    const day = new Date(yearNum, monthNumInt - 1, d).getDay();
+    if (day !== 0) {
+      if (day === 6) totalHours += saturdayHours;
+      else totalHours += weekdayHours;
+    }
+  }
+  return totalHours;
+}
+
 // Fetch data from GAS
 async function fetchData() {
   try {
-    document.getElementById('lastUpdated').innerHTML = '⌛ Connecting to EE Lab...';
+    document.getElementById('lastUpdated').innerHTML = '⌛ Loading...';
     const response = await fetch(GAS_URL);
     const data = await response.json();
-    
     if (!data.ok) throw new Error(data.error || 'Failed to fetch');
-    
     allRecords = data.records;
     document.getElementById('lastUpdated').innerHTML = formatDateToDDMMMYYYY(new Date());
-    
     populateFilters();
     applyFilters();
   } catch (error) {
     document.getElementById('lastUpdated').innerHTML = '⚠️ Error';
-    document.getElementById('tableBody').innerHTML = `<td><td colspan="7" class="loading">Error: ${error.message}. Check GAS deployment.</td></tr>`;
+    document.getElementById('tableBody').innerHTML = `<tr><td colspan="7" class="loading">Error: ${error.message}. Check GAS deployment.</td></tr>`;
     console.error(error);
   }
 }
@@ -482,18 +383,12 @@ function populateFilters() {
   const years = [...new Set(allRecords.map(r => r.year).filter(y => y))].sort();
   const months = [...new Set(allRecords.map(r => `${r.year}-${r.monthNum}-${r.monthName}`))].sort();
   const startups = [...new Set(allRecords.map(r => r.startup))].sort();
-  
   yearFilter.innerHTML = '<option value="ALL">All Years</option>' + years.map(y => `<option value="${y}">${y}</option>`).join('');
-  
-  monthFilter.innerHTML = '<option value="ALL">All Months</option>' + months.map(m => {
-    const [year, monthNum, monthName] = m.split('-');
-    return `<option value="${year}-${monthNum}">${monthName} ${year}</option>`;
-  }).join('');
-  
+  monthFilter.innerHTML = '<option value="ALL">All Months</option>' + months.map(m => { const [year, mn, monName] = m.split('-'); return `<option value="${year}-${mn}">${monName} ${year}</option>`; }).join('');
   startupFilter.innerHTML = '<option value="ALL">All Startups</option>' + startups.map(s => `<option value="${s}">${s}</option>`).join('');
 }
 
-// Apply all filters
+// Apply filters
 function applyFilters() {
   const year = yearFilter.value;
   const month = monthFilter.value;
@@ -503,15 +398,10 @@ function applyFilters() {
   
   filteredRecords = allRecords.filter(record => {
     if (year !== 'ALL' && record.year !== year) return false;
-    if (month !== 'ALL') {
-      const [y, m] = month.split('-');
-      if (record.year !== y || record.monthNum !== m) return false;
-    }
+    if (month !== 'ALL') { const [y, m] = month.split('-'); if (record.year !== y || record.monthNum !== m) return false; }
     if (startup !== 'ALL' && record.startup !== startup) return false;
     if (equip && !record.equipment.toLowerCase().includes(equip)) return false;
-    if (search && !record.startup.toLowerCase().includes(search) && 
-        !record.equipment.toLowerCase().includes(search) &&
-        !(record.repName || '').toLowerCase().includes(search)) return false;
+    if (search && !record.startup.toLowerCase().includes(search) && !record.equipment.toLowerCase().includes(search) && !(record.repName || '').toLowerCase().includes(search)) return false;
     return true;
   });
   
@@ -523,7 +413,7 @@ function applyFilters() {
   renderTable();
 }
 
-// Render KPI cards
+// Render KPI cards (including Lost Hours)
 function renderKPIs() {
   const totalSessions = filteredRecords.length;
   const totalHours = filteredRecords.reduce((sum, r) => sum + r.usageHours, 0);
@@ -542,160 +432,56 @@ function renderKPIs() {
     }
   });
   
-  // Calculate lost hours
-  const lostHours = totalAvailableHours - totalHours;
-  
+  const lostHours = Math.max(0, totalAvailableHours - totalHours);
   const utilizationPct = totalAvailableHours > 0 ? (totalHours / totalAvailableHours) * 100 : 0;
   let utilClass = utilizationPct >= 30 ? 'util-highlight' : (utilizationPct >= 15 ? 'util-warning' : 'util-critical');
   
   document.getElementById('kpiGrid').innerHTML = `
     <div class="kpi-card"><div class="kpi-label">Total Sessions</div><div class="kpi-value">${totalSessions}</div><div class="kpi-sub">records</div></div>
     <div class="kpi-card"><div class="kpi-label">Total Hours</div><div class="kpi-value">${totalHours.toFixed(1)}h</div><div class="kpi-sub">utilized</div></div>
-<<<<<<< HEAD
-=======
     <div class="kpi-card"><div class="kpi-label">Active Startups</div><div class="kpi-value">${uniqueStartups}</div><div class="kpi-sub">this period</div></div>
     <div class="kpi-card"><div class="kpi-label">Avg/Session</div><div class="kpi-value">${avgHours}h</div><div class="kpi-sub">per visit</div></div>
     <div class="kpi-card"><div class="kpi-label">Utilization Rate</div><div class="kpi-value ${utilClass}">${utilizationPct.toFixed(1)}%</div><div class="kpi-sub">of lab hours</div></div>
-    <div class="kpi-card"><div class="kpi-label">Lost Hours</div><div class="kpi-value" style="color: var(--red);">${lostHours.toFixed(1)}h</div><div class="kpi-sub">idle capacity</div></div>
+    <div class="kpi-card"><div class="kpi-label">Lost Hours</div><div class="kpi-value lost-hours">${lostHours.toFixed(1)}h</div><div class="kpi-sub">idle capacity</div></div>
   `;
 }
-  
-  document.getElementById('kpiGrid').innerHTML = `
-    <div class="kpi-card"><div class="kpi-label">Total Sessions</div><div class="kpi-value">${totalSessions}</div><div class="kpi-sub">records</div></div>
-    <div class="kpi-card"><div class="kpi-label">Total Hours</div><div class="kpi-value">${totalHours.toFixed(1)}h</div><div class="kpi-sub">utilization</div></div>
->>>>>>> e4f080f800e80858e5a17ae3f21cb8bc3c5b208c
-    <div class="kpi-card"><div class="kpi-label">Active Startups</div><div class="kpi-value">${uniqueStartups}</div><div class="kpi-sub">this period</div></div>
-    <div class="kpi-card"><div class="kpi-label">Avg/Session</div><div class="kpi-value">${avgHours}h</div><div class="kpi-sub">per visit</div></div>
-    <div class="kpi-card"><div class="kpi-label">Utilization Rate</div><div class="kpi-value ${utilClass}">${utilizationPct.toFixed(1)}%</div><div class="kpi-sub">of lab hours</div></div>
-    <div class="kpi-card"><div class="kpi-label">Lost Hours</div><div class="kpi-value" style="color: var(--red);">${lostHours.toFixed(1)}h</div><div class="kpi-sub">idle capacity</div></div>
-  `;
-}
-  
-// Render monthly chart
+
+// Monthly chart
 function renderMonthlyChart() {
   const monthly = {};
-  filteredRecords.forEach(r => {
-    const key = `${r.year}-${r.monthNum}`;
-    const label = `${r.monthName} ${r.year}`;
-    if (!monthly[key]) monthly[key] = { label, hours: 0, year: r.year, monthNum: r.monthNum };
-    monthly[key].hours += r.usageHours;
-  });
-  
+  filteredRecords.forEach(r => { const key = `${r.year}-${r.monthNum}`; const label = `${r.monthName} ${r.year}`; if (!monthly[key]) monthly[key] = { label, hours: 0, year: r.year, monthNum: r.monthNum }; monthly[key].hours += r.usageHours; });
   const sorted = Object.values(monthly).sort((a,b) => a.label.localeCompare(b.label)).slice(-12);
   const maxHours = Math.max(...sorted.map(m => m.hours), 1);
-  
-  document.getElementById('monthlyChart').innerHTML = sorted.map(m => {
-    const available = getAvailableHoursForMonth(m.year, m.monthNum);
-    const utilPct = available > 0 ? (m.hours / available) * 100 : 0;
-    const width = (m.hours / maxHours) * 100;
-    return `
-      <div class="bar-item">
-        <span class="bar-label">${m.label}</span>
-        <div class="bar-track"><div class="bar-fill util" style="width: ${width}%">${m.hours.toFixed(1)}h</div></div>
-        <span class="bar-percent">${utilPct.toFixed(0)}%</span>
-      </div>
-    `;
-  }).join('');
+  document.getElementById('monthlyChart').innerHTML = sorted.map(m => { const available = getAvailableHoursForMonth(m.year, m.monthNum); const utilPct = available > 0 ? (m.hours / available) * 100 : 0; const width = (m.hours / maxHours) * 100; return `<div class="bar-item"><span class="bar-label">${m.label}</span><div class="bar-track"><div class="bar-fill util" style="width: ${width}%">${m.hours.toFixed(1)}h</div></div><span class="bar-percent">${utilPct.toFixed(0)}%</span></div>`; }).join('');
 }
 
-// Render startup chart
 function renderStartupChart() {
-  const startups = {};
-  filteredRecords.forEach(r => {
-    if (!startups[r.startup]) startups[r.startup] = 0;
-    startups[r.startup] += r.usageHours;
-  });
-  
-  const sorted = Object.entries(startups).sort((a,b) => b[1] - a[1]).slice(0, 8);
-  const maxHours = sorted[0]?.[1] || 1;
-  
-  document.getElementById('startupChart').innerHTML = sorted.map(([name, hours]) => `
-    <div class="bar-item">
-      <span class="bar-label" title="${name}">${name.substring(0, 22)}</span>
-      <div class="bar-track"><div class="bar-fill startup" style="width: ${(hours/maxHours)*100}%">${hours.toFixed(1)}h</div></div>
-    </div>
-  `).join('');
+  const startups = {}; filteredRecords.forEach(r => { startups[r.startup] = (startups[r.startup] || 0) + r.usageHours; });
+  const sorted = Object.entries(startups).sort((a,b) => b[1] - a[1]).slice(0, 8); const maxHours = sorted[0]?.[1] || 1;
+  document.getElementById('startupChart').innerHTML = sorted.map(([name, hours]) => `<div class="bar-item"><span class="bar-label" title="${name}">${name.substring(0, 22)}</span><div class="bar-track"><div class="bar-fill startup" style="width: ${(hours/maxHours)*100}%">${hours.toFixed(1)}h</div></div></div>`).join('');
 }
 
-// Render equipment chart
 function renderEquipmentChart() {
-  const equipment = {};
-  filteredRecords.forEach(r => {
-    if (r.equipment && r.equipment !== 'no equip') {
-      const parts = r.equipment.split(/[,+]/).map(p => p.trim());
-      parts.forEach(part => {
-        if (part.length > 2) equipment[part] = (equipment[part] || 0) + r.usageHours;
-      });
-    }
-  });
-  
-  const sorted = Object.entries(equipment).sort((a,b) => b[1] - a[1]).slice(0, 6);
-  const maxHours = sorted[0]?.[1] || 1;
-  
-  document.getElementById('equipmentChart').innerHTML = sorted.map(([name, hours]) => `
-    <div class="bar-item">
-      <span class="bar-label" title="${name}">${name.substring(0, 18)}</span>
-      <div class="bar-track"><div class="bar-fill equip" style="width: ${(hours/maxHours)*100}%">${hours.toFixed(1)}h</div></div>
-    </div>
-  `).join('');
+  const equipment = {}; filteredRecords.forEach(r => { if (r.equipment) { r.equipment.split(/[,+]/).map(p => p.trim()).forEach(part => { if (part.length > 2) equipment[part] = (equipment[part] || 0) + r.usageHours; }); } });
+  const sorted = Object.entries(equipment).sort((a,b) => b[1] - a[1]).slice(0, 6); const maxHours = sorted[0]?.[1] || 1;
+  document.getElementById('equipmentChart').innerHTML = sorted.map(([name, hours]) => `<div class="bar-item"><span class="bar-label" title="${name}">${name.substring(0, 18)}</span><div class="bar-track"><div class="bar-fill equip" style="width: ${(hours/maxHours)*100}%">${hours.toFixed(1)}h</div></div></div>`).join('');
 }
 
-// Render yearly chart
 function renderYearlyChart() {
-  const yearly = {};
-  filteredRecords.forEach(r => {
-    if (!yearly[r.year]) yearly[r.year] = 0;
-    yearly[r.year] += r.usageHours;
-  });
-  
-  const sorted = Object.entries(yearly).sort();
-  const maxHours = Math.max(...Object.values(yearly), 1);
-  
-  document.getElementById('yearlyChart').innerHTML = sorted.map(([year, hours]) => `
-    <div class="bar-item">
-      <span class="bar-label">${year}</span>
-      <div class="bar-track"><div class="bar-fill year" style="width: ${(hours/maxHours)*100}%">${hours.toFixed(1)}h</div></div>
-    </div>
-  `).join('');
+  const yearly = {}; filteredRecords.forEach(r => { yearly[r.year] = (yearly[r.year] || 0) + r.usageHours; });
+  const sorted = Object.entries(yearly).sort(); const maxHours = Math.max(...Object.values(yearly), 1);
+  document.getElementById('yearlyChart').innerHTML = sorted.map(([year, hours]) => `<div class="bar-item"><span class="bar-label">${year}</span><div class="bar-track"><div class="bar-fill year" style="width: ${(hours/maxHours)*100}%">${hours.toFixed(1)}h</div></div></div>`).join('');
 }
 
-// Counter for row numbers
-let rowCounter = 1;
-
-// Render table with scroll (shows all records, scrollable)
 function renderTable() {
   const tbody = document.getElementById('tableBody');
   document.getElementById('tableCount').innerHTML = `${filteredRecords.length} sessions`;
-  
-  if (filteredRecords.length === 0) {
-    tbody.innerHTML = '<tr><td colspan="7" class="loading">No sessions match filters</td></tr>';
-    return;
-  }
-  
-  // Reset counter and show all records (scrollable)
+  if (filteredRecords.length === 0) { tbody.innerHTML = '<tr><td colspan="7" class="loading">No sessions match filters</td></tr>'; return; }
   rowCounter = 1;
-  tbody.innerHTML = filteredRecords.map(r => `
-    <tr>
-      <td style="color:var(--muted); width:40px;">${rowCounter++}</td>
-      <td style="white-space:nowrap;">${r.dateDisplay || r.sheetName || '-'}</td>
-      <td><span class="startup-badge">${escapeHtml(r.startup)}</span></td>
-      <td>${escapeHtml(r.repName || '-')}</td>
-      <td><span class="equip-pill">${escapeHtml(r.equipment || '-')}</span></td>
-      <td style="max-width:200px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" title="${escapeHtml(r.testedWhat || '-')}">${escapeHtml((r.testedWhat || '-').substring(0, 45))}</td>
-      <td style="font-weight:600; width:70px;">${r.usageHours.toFixed(2)} h</td>
-    </table>
-  `).join('');
+  tbody.innerHTML = filteredRecords.map(r => `<tr><td style="color:var(--muted);">${rowCounter++}</td><td style="white-space:nowrap;">${r.dateDisplay || r.sheetName || '-'}</td><td><span class="startup-badge">${escapeHtml(r.startup)}</span></td><td>${escapeHtml(r.repName || '-')}</td><td><span class="equip-pill">${escapeHtml(r.equipment || '-')}</span></td><td style="max-width:200px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" title="${escapeHtml(r.testedWhat || '-')}">${escapeHtml((r.testedWhat || '-').substring(0, 45))}</td><td style="font-weight:600;">${r.usageHours.toFixed(2)} h</td></tr>`).join('');
 }
 
-function escapeHtml(str) {
-  if (!str) return '';
-  return str.replace(/[&<>]/g, function(m) {
-    if (m === '&') return '&amp;';
-    if (m === '<') return '&lt;';
-    if (m === '>') return '&gt;';
-    return m;
-  });
-}
+function escapeHtml(str) { if (!str) return ''; return str.replace(/[&<>]/g, (m) => m === '&' ? '&amp;' : (m === '<' ? '&lt;' : '&gt;')); }
 
 // Event listeners
 yearFilter.addEventListener('change', applyFilters);
@@ -703,25 +489,14 @@ monthFilter.addEventListener('change', applyFilters);
 startupFilter.addEventListener('change', applyFilters);
 equipFilter.addEventListener('input', applyFilters);
 tableSearch.addEventListener('input', applyFilters);
-resetBtn.addEventListener('click', () => {
-  yearFilter.value = 'ALL';
-  monthFilter.value = 'ALL';
-  startupFilter.value = 'ALL';
-  equipFilter.value = '';
-  tableSearch.value = '';
-  applyFilters();
-});
+resetBtn.addEventListener('click', () => { yearFilter.value = 'ALL'; monthFilter.value = 'ALL'; startupFilter.value = 'ALL'; equipFilter.value = ''; tableSearch.value = ''; applyFilters(); });
 
 // Scroll reveal
-const revealObs = new IntersectionObserver(entries => {
-  entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('vis'); });
-}, { threshold: 0.1 });
+const revealObs = new IntersectionObserver(entries => { entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('vis'); }); }, { threshold: 0.1 });
 document.querySelectorAll('.reveal').forEach(el => revealObs.observe(el));
 
 // Initialize
 fetchData();
-
-// Console watermark (fun)
 console.log("%c⚡ EE Lab Utilization Dashboard | KLE-CTIE ⚡", "color: #c9a84c; font-size: 14px; font-weight: bold;");
 console.log("%c🔒 Copy protection enabled — This dashboard is protected!", "color: #1b7a3e; font-size: 12px;");
 </script>
