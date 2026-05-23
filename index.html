@@ -411,13 +411,40 @@ const tableSearch = document.getElementById('tableSearch');
 
 // Helper: Calculate available lab hours per month (8 hours/day, weekdays only)
 function getAvailableHoursForMonth(year, monthNum) {
-  const daysInMonth = new Date(parseInt(year), parseInt(monthNum), 0).getDate();
-  let weekdays = 0;
-  for (let d = 1; d <= daysInMonth; d++) {
-    const day = new Date(parseInt(year), parseInt(monthNum) - 1, d).getDay();
-    if (day !== 0 && day !== 6) weekdays++;
+  const yearNum = parseInt(year);
+  const monthNumInt = parseInt(monthNum);
+  const daysInMonth = new Date(yearNum, monthNumInt, 0).getDate();
+  let totalHours = 0;
+  
+  // Cutoff date for timing change: November 1, 2024
+  const cutoffDate = new Date(2024, 10, 1); // Nov 1, 2024 (month is 0-indexed)
+  const currentMonthDate = new Date(yearNum, monthNumInt - 1, 1);
+  const isNewTiming = currentMonthDate >= cutoffDate;
+  
+  // Define timings based on period
+  let weekdayHours, saturdayHours;
+  if (isNewTiming) {
+    // From Nov 2024 onwards: Mon-Fri 10am-6pm (8 hrs), Sat 10am-2pm (4 hrs)
+    weekdayHours = 8;  // 10am to 6pm
+    saturdayHours = 4; // 10am to 2pm
+  } else {
+    // Oct 2022 to Oct 2024: Mon-Fri 10am-5pm (7 hrs), Sat 10am-1pm (3 hrs)
+    weekdayHours = 7;  // 10am to 5pm
+    saturdayHours = 3; // 10am to 1pm
   }
-  return weekdays * 8;
+  
+  for (let d = 1; d <= daysInMonth; d++) {
+    const day = new Date(yearNum, monthNumInt - 1, d).getDay();
+    if (day !== 0) { // Not Sunday (Sunday = 0)
+      if (day === 6) { // Saturday
+        totalHours += saturdayHours;
+      } else { // Monday to Friday
+        totalHours += weekdayHours;
+      }
+    }
+  }
+  
+  return totalHours;
 }
 
 // Helper function to format date as DD-MMM-YYYY
