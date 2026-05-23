@@ -551,6 +551,19 @@ function renderKPIs() {
   document.getElementById('kpiGrid').innerHTML = `
     <div class="kpi-card"><div class="kpi-label">Total Sessions</div><div class="kpi-value">${totalSessions}</div><div class="kpi-sub">records</div></div>
     <div class="kpi-card"><div class="kpi-label">Total Hours</div><div class="kpi-value">${totalHours.toFixed(1)}h</div><div class="kpi-sub">utilized</div></div>
+<<<<<<< HEAD
+=======
+    <div class="kpi-card"><div class="kpi-label">Active Startups</div><div class="kpi-value">${uniqueStartups}</div><div class="kpi-sub">this period</div></div>
+    <div class="kpi-card"><div class="kpi-label">Avg/Session</div><div class="kpi-value">${avgHours}h</div><div class="kpi-sub">per visit</div></div>
+    <div class="kpi-card"><div class="kpi-label">Utilization Rate</div><div class="kpi-value ${utilClass}">${utilizationPct.toFixed(1)}%</div><div class="kpi-sub">of lab hours</div></div>
+    <div class="kpi-card"><div class="kpi-label">Lost Hours</div><div class="kpi-value" style="color: var(--red);">${lostHours.toFixed(1)}h</div><div class="kpi-sub">idle capacity</div></div>
+  `;
+}
+  
+  document.getElementById('kpiGrid').innerHTML = `
+    <div class="kpi-card"><div class="kpi-label">Total Sessions</div><div class="kpi-value">${totalSessions}</div><div class="kpi-sub">records</div></div>
+    <div class="kpi-card"><div class="kpi-label">Total Hours</div><div class="kpi-value">${totalHours.toFixed(1)}h</div><div class="kpi-sub">utilization</div></div>
+>>>>>>> e4f080f800e80858e5a17ae3f21cb8bc3c5b208c
     <div class="kpi-card"><div class="kpi-label">Active Startups</div><div class="kpi-value">${uniqueStartups}</div><div class="kpi-sub">this period</div></div>
     <div class="kpi-card"><div class="kpi-label">Avg/Session</div><div class="kpi-value">${avgHours}h</div><div class="kpi-sub">per visit</div></div>
     <div class="kpi-card"><div class="kpi-label">Utilization Rate</div><div class="kpi-value ${utilClass}">${utilizationPct.toFixed(1)}%</div><div class="kpi-sub">of lab hours</div></div>
