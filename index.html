@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>EE Lab Utilization Intelligence | KLE-CTIE</title>
+<title>Electronics Enabling Lab Utilization Intelligence | KLE-CTIE</title>
 <style>
 :root{
   --ink:#172033;--muted:#627089;--navy:#071c38;--blue:#0d5a91;--teal:#0f766e;
@@ -20,23 +20,24 @@ a{color:inherit;text-decoration:none}
 .topbar{height:64px;background:linear-gradient(90deg,#071c38,#0d345f 58%,#0b4d64);color:#fff;display:flex;align-items:center;justify-content:space-between;padding:0 28px;position:sticky;top:0;z-index:20;box-shadow:0 8px 26px rgba(6,22,44,.20)}
 .brand strong{display:block;font-size:15px}.brand span{display:block;font-size:11px;color:#c7d9ea;margin-top:2px}.actions{display:flex;gap:8px;flex-wrap:wrap}.btn{border:1px solid rgba(255,255,255,.24);background:rgba(255,255,255,.10);color:#fff;border-radius:7px;padding:8px 11px;font-size:12px;font-weight:800;cursor:pointer}.btn.gold{background:linear-gradient(135deg,#f0bd4d,var(--gold));color:#11294d;border-color:#f0bd4d}
 .wrap{max-width:1240px;margin:0 auto;padding:24px}
-.hero{position:relative;min-height:390px;border-radius:12px;overflow:hidden;background:url("assets/ee-lab-utilization-hero-v2.png") center/cover no-repeat;box-shadow:var(--shadow);display:grid;grid-template-columns:minmax(0,1.25fr) minmax(290px,.75fr);align-items:end;margin-bottom:18px;isolation:isolate}
-.hero:before{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(6,18,36,.93),rgba(8,31,53,.70) 48%,rgba(8,31,53,.16));z-index:-1}
-.hero:after{content:"";position:absolute;inset:0;background:linear-gradient(120deg,transparent 0 45%,rgba(255,255,255,.10) 50%,transparent 56%);animation:scan 7s ease-in-out infinite;pointer-events:none}
-.summary{padding:34px;color:#fff;max-width:760px}.kickers{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}.kickers span{border:1px solid rgba(255,255,255,.24);background:rgba(255,255,255,.10);border-radius:999px;padding:6px 9px;font-size:10px;font-weight:900;text-transform:uppercase;letter-spacing:.55px}
+.hero{position:relative;min-height:390px;border-radius:12px;overflow:hidden;background:#071c38;box-shadow:var(--shadow);display:grid;grid-template-columns:minmax(0,1.25fr) minmax(290px,.75fr);align-items:end;margin-bottom:18px;isolation:isolate}
+.hero-slides{position:absolute;inset:0;z-index:0}.hero-slide{position:absolute;inset:0;background-size:cover;background-position:center;opacity:0;transform:scale(1);animation:heroCarousel 16s infinite}.hero-slide:nth-child(1){animation-delay:0s}.hero-slide:nth-child(2){animation-delay:8s}
+.hero:before{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(6,18,36,.93),rgba(8,31,53,.70) 48%,rgba(8,31,53,.16));z-index:1;pointer-events:none}
+.hero:after{content:"";position:absolute;inset:0;background:linear-gradient(120deg,transparent 0 45%,rgba(255,255,255,.10) 50%,transparent 56%);animation:scan 7s ease-in-out infinite;pointer-events:none;z-index:2}
+.summary{position:relative;z-index:3;padding:34px;color:#fff;max-width:760px}.kickers{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}.kickers span{border:1px solid rgba(255,255,255,.24);background:rgba(255,255,255,.10);border-radius:999px;padding:6px 9px;font-size:10px;font-weight:900;text-transform:uppercase;letter-spacing:.55px}
 h1{margin:0 0 10px;font-size:38px;line-height:1.04;letter-spacing:0}.summary p{margin:0;color:#d7e4f1;font-size:14px;line-height:1.6;max-width:690px}.deadline{display:inline-flex;margin-top:12px;background:#fff8e8;color:#785100;border:1px solid #f0d79d;border-radius:8px;padding:9px 10px;font-size:12px;font-weight:900}
-.hero-panel{background:rgba(255,255,255,.93);backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,.65);border-radius:10px;padding:20px;margin:0 22px 22px 0;box-shadow:var(--shadow)}.hero-panel .label{font-size:10px;text-transform:uppercase;letter-spacing:.75px;color:var(--muted);font-weight:900}.hero-panel .value{font-size:22px;font-weight:900;color:#102b50;margin:8px 0}.hero-panel a{display:inline-flex;margin-top:10px;color:#0d5a91;font-size:12px;font-weight:900}
+.hero-panel{position:relative;z-index:3;background:rgba(255,255,255,.93);backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,.65);border-radius:10px;padding:20px;margin:0 22px 22px 0;box-shadow:var(--shadow)}.hero-panel .label{font-size:10px;text-transform:uppercase;letter-spacing:.75px;color:var(--muted);font-weight:900}.hero-panel .value{font-size:22px;font-weight:900;color:#102b50;margin:8px 0}.hero-panel a{display:inline-flex;margin-top:10px;color:#0d5a91;font-size:12px;font-weight:900}
 .filters,.section,.card{background:rgba(255,255,255,.96);border:1px solid rgba(216,225,236,.95);border-radius:10px;box-shadow:0 6px 18px rgba(23,32,51,.07)}
-.filters{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;padding:15px;margin-bottom:18px}.field label{display:block;font-size:10px;text-transform:uppercase;letter-spacing:.55px;color:var(--muted);font-weight:900;margin-bottom:6px}.field input,.field select{width:100%;border:1px solid var(--line);border-radius:8px;padding:10px;font:inherit;font-size:13px;background:#fff}.reset{align-self:end;background:#102b50;color:#fff;border:0;border-radius:8px;padding:11px 14px;font-weight:900;cursor:pointer}
+.filters{display:grid;grid-template-columns:1fr 1fr 1fr 1fr 1fr 1fr auto;gap:12px;padding:15px;margin-bottom:18px}.field label{display:block;font-size:10px;text-transform:uppercase;letter-spacing:.55px;color:var(--muted);font-weight:900;margin-bottom:6px}.field input,.field select{width:100%;border:1px solid var(--line);border-radius:8px;padding:10px;font:inherit;font-size:13px;background:#fff}.reset{align-self:end;background:#102b50;color:#fff;border:0;border-radius:8px;padding:11px 14px;font-weight:900;cursor:pointer}
 .metrics{display:grid;grid-template-columns:repeat(6,1fr);gap:12px;margin-bottom:18px}.metric{position:relative;min-height:96px;background:linear-gradient(180deg,#fff,#f9fbfd);border:1px solid var(--line);border-radius:10px;padding:16px;box-shadow:0 6px 18px rgba(23,32,51,.07);overflow:hidden}.metric:before{content:"";position:absolute;inset:0 0 auto;height:4px;background:linear-gradient(90deg,var(--blue),var(--teal),var(--gold))}.metric .num{font-size:28px;font-weight:900;color:#102b50}.metric .label{font-size:10px;line-height:1.35;text-transform:uppercase;letter-spacing:.6px;color:var(--muted);margin-top:9px}.metric.green .num{color:var(--green)}.metric.amber .num{color:var(--amber)}.metric.red .num{color:var(--red)}
-.bridge{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:18px}.card{padding:15px;overflow:hidden}.card strong{display:block;color:#102b50;margin-bottom:6px}.card p{margin:0;color:var(--muted);font-size:12px;line-height:1.5}.visual-card{background:url("assets/ee-lab-utilization-insights-v2.png") center/cover no-repeat;min-height:140px;position:relative}.visual-card:before{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(7,28,56,.78),rgba(7,28,56,.18))}.visual-card strong,.visual-card p{position:relative;color:#fff}.visual-card p{color:#d9e6f1}
+.bridge{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:18px}.card{padding:15px;overflow:hidden;min-height:118px}.card strong{display:block;color:#102b50;margin-bottom:6px}.card p{margin:0;color:var(--muted);font-size:12px;line-height:1.5}.card .card-num{font-size:24px;font-weight:900;color:#102b50;margin-bottom:5px}.visual-card{background:url("assets/ee-lab-utilization-insights-v2.png") center/cover no-repeat;min-height:140px;position:relative}.visual-card:before{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(7,28,56,.78),rgba(7,28,56,.18))}.visual-card strong,.visual-card p,.visual-card .card-num{position:relative;color:#fff}.visual-card p{color:#d9e6f1}
 .grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px}.section{padding:18px;margin-bottom:16px}.section h2{font-size:14px;text-transform:uppercase;letter-spacing:.55px;color:#102b50;margin:0 0 14px;display:flex;justify-content:space-between;gap:12px}.section h2 small{font-size:11px;color:var(--muted);letter-spacing:0;text-transform:none}
 .bar-row{display:grid;grid-template-columns:minmax(130px,.55fr) 1fr 58px;gap:10px;align-items:center;margin:10px 0;font-size:12px}.bar{height:26px;background:#e7edf5;border-radius:999px;overflow:hidden}.bar span{height:100%;display:flex;align-items:center;justify-content:flex-end;padding-right:8px;color:#fff;font-size:11px;font-weight:900;background:linear-gradient(90deg,var(--blue),var(--teal),var(--gold));min-width:24px;transition:width .7s ease}.right{text-align:right}.mono{font-family:Consolas,"Courier New",monospace}.muted{color:var(--muted)}
 .table-tools{display:flex;gap:10px;align-items:center;justify-content:space-between;margin-bottom:12px}.search{border:1px solid var(--line);border-radius:8px;padding:10px 11px;min-width:260px;font-size:13px}.table-box{max-height:520px;overflow:auto;border:1px solid var(--line);border-radius:8px}table{width:100%;border-collapse:separate;border-spacing:0;font-size:12px;background:#fff}th{text-align:left;color:#d9e6f1;background:#102b50;text-transform:uppercase;letter-spacing:.45px;font-size:10px;padding:10px;position:sticky;top:0}td{padding:10px;border-bottom:1px solid var(--line);vertical-align:top}tr:hover td{background:#f9fcff}.pill{display:inline-flex;border-radius:999px;background:#edf3f8;color:#24415e;padding:4px 8px;font-size:11px;font-weight:800}.footer{position:fixed;left:0;right:0;bottom:0;height:38px;background:rgba(7,28,56,.94);color:#d8e7f4;display:flex;align-items:center;justify-content:center;gap:6px;font-size:11px;z-index:30}.heart{color:#e63946;animation:heart 1.15s ease-in-out infinite}
 .sync-line{position:fixed;left:0;right:0;top:0;height:3px;background:linear-gradient(90deg,var(--gold),var(--teal),var(--blue));z-index:80;transform:scaleX(0);transform-origin:left;opacity:0;transition:opacity .2s ease,transform .35s ease}.sync-line.active{opacity:1;animation:syncLine 1.45s ease-in-out infinite}.sync-line.done{opacity:1;transform:scaleX(1)}
 .sync-toast{position:fixed;right:22px;bottom:54px;z-index:70;display:flex;align-items:center;gap:10px;background:rgba(255,255,255,.96);border:1px solid rgba(216,225,236,.95);border-radius:10px;box-shadow:0 16px 34px rgba(23,32,51,.14);padding:12px 14px;min-width:260px;transform:translateY(16px);opacity:0;pointer-events:none;transition:opacity .22s ease,transform .22s ease}.sync-toast.active,.sync-toast.done,.sync-toast.error{opacity:1;transform:translateY(0)}.sync-toast .sync-icon{width:30px;height:30px;border-radius:50%;border:3px solid #e4edf5;border-top-color:var(--teal);animation:spin .8s linear infinite}.sync-toast.done .sync-icon{border:0;background:#e5f5ec;position:relative;animation:none}.sync-toast.done .sync-icon:after{content:"";position:absolute;left:9px;top:7px;width:8px;height:13px;border:solid var(--green);border-width:0 3px 3px 0;transform:rotate(45deg)}.sync-toast.error .sync-icon{border:0;background:#fae8e8;animation:none}.sync-toast.error .sync-icon:after{content:"!";display:grid;place-items:center;height:100%;color:var(--red);font-weight:900}.sync-copy strong{display:block;font-size:12px;color:#102b50}.sync-copy span{display:block;margin-top:2px;font-size:11px;color:var(--muted)}
 .skeleton-card{height:96px;border-radius:10px;background:linear-gradient(110deg,#e9f0f7 8%,#f8fbfd 18%,#e9f0f7 33%);background-size:200% 100%;animation:shimmer 1.35s linear infinite}.skeleton-bar{height:26px;border-radius:999px;background:linear-gradient(110deg,#e9f0f7 8%,#f8fbfd 18%,#e9f0f7 33%);background-size:200% 100%;animation:shimmer 1.35s linear infinite;margin:10px 0}
-@keyframes scan{0%,58%{transform:translateX(-120%)}74%,100%{transform:translateX(120%)}}@keyframes heart{0%,100%{transform:scale(1)}20%{transform:scale(1.28)}40%{transform:scale(.95)}55%{transform:scale(1.12)}}@keyframes spin{to{transform:rotate(360deg)}}@keyframes shimmer{to{background-position:-200% 0}}@keyframes syncLine{0%{transform:scaleX(.08) translateX(-20%)}50%{transform:scaleX(.58) translateX(60%)}100%{transform:scaleX(.08) translateX(122%)}}
+@keyframes scan{0%,58%{transform:translateX(-120%)}74%,100%{transform:translateX(120%)}}@keyframes heroCarousel{0%,42%{opacity:1;transform:scale(1)}50%,100%{opacity:0;transform:scale(1.035)}}@keyframes heart{0%,100%{transform:scale(1)}20%{transform:scale(1.28)}40%{transform:scale(.95)}55%{transform:scale(1.12)}}@keyframes spin{to{transform:rotate(360deg)}}@keyframes shimmer{to{background-position:-200% 0}}@keyframes syncLine{0%{transform:scaleX(.08) translateX(-20%)}50%{transform:scaleX(.58) translateX(60%)}100%{transform:scaleX(.08) translateX(122%)}}
 @media (prefers-reduced-motion:reduce){*,*:before,*:after{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
 @media(max-width:1050px){.hero,.grid2,.bridge{grid-template-columns:1fr}.metrics{grid-template-columns:repeat(3,1fr)}.filters{grid-template-columns:repeat(2,1fr)}.hero-panel{margin:0 18px 18px}}
 @media(max-width:640px){.wrap{padding:16px}.topbar{padding:0 14px}.actions{display:none}.summary{padding:24px}.summary h1{font-size:24px}.metrics{grid-template-columns:repeat(2,1fr)}.filters{grid-template-columns:1fr}.bar-row{grid-template-columns:1fr}.right{text-align:left}.search{min-width:0;width:100%}}
@@ -46,7 +47,7 @@ h1{margin:0 0 10px;font-size:38px;line-height:1.04;letter-spacing:0}.summary p{m
 <div class="sync-line" id="sync-line"></div>
 <div class="sync-toast" id="sync-toast"><div class="sync-icon"></div><div class="sync-copy"><strong id="sync-title">Syncing utilization data</strong><span id="sync-detail">Reading GAS source...</span></div></div>
 <header class="topbar">
-  <div class="brand"><strong>EE Lab Utilization Intelligence</strong><span>KLE-CTIE usage, capacity, startup and equipment analytics</span></div>
+  <div class="brand"><strong>Electronics Enabling Lab Utilization Intelligence</strong><span>KLE-CTIE usage, capacity, startup and equipment analytics</span></div>
   <div class="actions">
     <a class="btn" href="https://rhchheda.github.io/EE-Lab-Report-Builder/dashboard.html">Progress Review Portal</a>
     <button class="btn gold" onclick="fetchData()">Refresh</button>
@@ -54,6 +55,10 @@ h1{margin:0 0 10px;font-size:38px;line-height:1.04;letter-spacing:0}.summary p{m
 </header>
 <main class="wrap">
   <section class="hero">
+    <div class="hero-slides">
+      <div class="hero-slide" style="background-image:url('assets/ee-lab-utilization-hero-v2.png')"></div>
+      <div class="hero-slide" style="background-image:url('assets/ee-lab-utilization-insights-v2.png')"></div>
+    </div>
     <div class="summary">
       <div class="kickers"><span>Live GAS data</span><span>Equipment intelligence</span><span>Capacity KPI</span></div>
       <h1>Electronics Enabling Lab Utilization Intelligence</h1>
@@ -70,7 +75,9 @@ h1{margin:0 0 10px;font-size:38px;line-height:1.04;letter-spacing:0}.summary p{m
 
   <section class="filters">
     <div class="field"><label>Year</label><select id="yearFilter"></select></div>
-    <div class="field"><label>Month</label><select id="monthFilter"></select></div>
+    <div class="field"><label>Month quick filter</label><select id="monthFilter"></select></div>
+    <div class="field"><label>From date</label><input id="fromDateFilter" type="date"></div>
+    <div class="field"><label>To date</label><input id="toDateFilter" type="date"></div>
     <div class="field"><label>Startup</label><select id="startupFilter"></select></div>
     <div class="field"><label>Equipment</label><input id="equipFilter" placeholder="DSO, MSO, PSU"></div>
     <button class="reset" id="resetBtn">Reset</button>
@@ -78,10 +85,10 @@ h1{margin:0 0 10px;font-size:38px;line-height:1.04;letter-spacing:0}.summary p{m
 
   <section class="metrics" id="kpiGrid"></section>
 
-  <section class="bridge">
+  <section class="bridge" id="insightCards">
     <div class="card visual-card"><strong>Instrumentation-Led Review</strong><p>Usage data is framed around lab instruments, demand concentration and productive capacity.</p></div>
-    <div class="card"><strong>Suggested Title</strong><p>Use <b>EE Lab Utilization Intelligence</b> for the public page and <b>Utilization Status</b> inside the weekly progress review portal.</p></div>
-    <div class="card"><strong>Portal Integration</strong><p>Expose one compact status endpoint from this GAS source so the Progress Review Portal can show latest utilization %, hours and idle capacity.</p></div>
+    <div class="card"><strong>Capacity Signal</strong><p>Loading utilization status...</p></div>
+    <div class="card"><strong>Instrument Focus</strong><p>Loading instrument demand...</p></div>
   </section>
 
   <section class="grid2">
@@ -97,7 +104,7 @@ h1{margin:0 0 10px;font-size:38px;line-height:1.04;letter-spacing:0}.summary p{m
     <div class="table-box"><table><thead><tr><th>#</th><th>Date</th><th>Startup</th><th>Representative</th><th>Equipment</th><th>Tested / Purpose</th><th>Hours</th></tr></thead><tbody id="tableBody"><tr><td colspan="7">Connecting to EE Lab...</td></tr></tbody></table></div>
   </section>
 </main>
-<footer class="footer">Made with <span class="heart">♥</span> <span>~rhc · EE Lab, KLE-CTIE · Utilization Intelligence</span></footer>
+<footer class="footer">Made with <span class="heart">♥</span> <span>~rhc · Electronics Enabling Lab, KLE-CTIE · Utilization Intelligence</span></footer>
 
 <script>
 const GAS_URL="https://script.google.com/macros/s/AKfycby4wDb_SU1jgvfZFiMxX6ZiDMmIrxU0hcgqrVpmFLZKjr8xke5vinC69Mydg6WZRnWB5Q/exec";
@@ -149,18 +156,39 @@ function populateFilters(){
   $("yearFilter").innerHTML='<option value="ALL">All Years</option>'+years.map(y=>`<option value="${esc(y)}">${esc(y)}</option>`).join("");
   $("monthFilter").innerHTML='<option value="ALL">All Months</option>'+months.map(v=>{const [y,m,n]=v.split("-");return `<option value="${esc(y+"-"+m)}">${esc(n)} ${esc(y)}</option>`}).join("");
   $("startupFilter").innerHTML='<option value="ALL">All Startups</option>'+startups.map(s=>`<option value="${esc(s)}">${esc(s)}</option>`).join("");
+  const dated=allRecords.map(recordDateValue).filter(Boolean).sort();
+  if(dated.length && !$("fromDateFilter").value && !$("toDateFilter").value){
+    $("fromDateFilter").value=dated[0];
+    $("toDateFilter").value=dated[dated.length-1];
+  }
+}
+function recordDateValue(record){
+  if(!record?.date) return "";
+  const d=new Date(record.date);
+  return isNaN(d.getTime())?"":d.toISOString().slice(0,10);
+}
+function setDateRangeFromMonth(){
+  const month=$("monthFilter").value;
+  if(month==="ALL") return;
+  const [year,monthNum]=month.split("-");
+  const start=new Date(Number(year),Number(monthNum)-1,1);
+  const end=new Date(Number(year),Number(monthNum),0);
+  $("fromDateFilter").value=start.toISOString().slice(0,10);
+  $("toDateFilter").value=end.toISOString().slice(0,10);
 }
 function applyFilters(){
-  const year=$("yearFilter").value,month=$("monthFilter").value,startup=$("startupFilter").value,equip=$("equipFilter").value.toLowerCase(),search=$("tableSearch").value.toLowerCase();
+  const year=$("yearFilter").value,month=$("monthFilter").value,startup=$("startupFilter").value,equip=$("equipFilter").value.toLowerCase(),search=$("tableSearch").value.toLowerCase(),from=$("fromDateFilter").value,to=$("toDateFilter").value;
   filteredRecords=allRecords.filter(r=>{
     if(year!=="ALL"&&r.year!==year) return false;
-    if(month!=="ALL"){const [y,m]=month.split("-"); if(r.year!==y||r.monthNum!==m) return false;}
+    const recordDate=recordDateValue(r);
+    if(from&&recordDate&&recordDate<from) return false;
+    if(to&&recordDate&&recordDate>to) return false;
     if(startup!=="ALL"&&r.startup!==startup) return false;
     if(equip&&!String(r.equipment||"").toLowerCase().includes(equip)) return false;
     const hay=`${r.startup||""} ${r.equipment||""} ${r.repName||""} ${r.testedWhat||""}`.toLowerCase();
     return !search||hay.includes(search);
   });
-  renderKPIs(); renderMonthlyChart(); renderStartupChart(); renderEquipmentChart(); renderYearlyChart(); renderTable();
+  renderKPIs(); renderInsightCards(); renderMonthlyChart(); renderStartupChart(); renderEquipmentChart(); renderYearlyChart(); renderTable();
 }
 function utilizationSummary(){
   const totalHours=filteredRecords.reduce((s,r)=>s+(Number(r.usageHours)||0),0);
@@ -177,6 +205,23 @@ function renderKPIs(){
     metric(s.pct.toFixed(1)+"%","Utilization rate",cls),metric(s.idle.toFixed(1)+"h","Idle capacity","red")
   ].join("");
 }
+function renderInsightCards(){
+  const s=utilizationSummary();
+  const equipmentTotals={};
+  filteredRecords.forEach(r=>String(r.equipment||"").split(/[,+]/).map(x=>x.trim()).filter(x=>x.length>2).forEach(x=>equipmentTotals[x]=(equipmentTotals[x]||0)+(Number(r.usageHours)||0)));
+  const topEquip=Object.entries(equipmentTotals).sort((a,b)=>b[1]-a[1])[0];
+  const periodLabel=periodLabelText();
+  $("insightCards").innerHTML=`
+    <div class="card visual-card"><strong>Review Period</strong><div class="card-num">${esc(periodLabel)}</div><p>${filteredRecords.length} utilization sessions are included in the current view.</p></div>
+    <div class="card"><strong>Capacity Signal</strong><div class="card-num">${s.pct.toFixed(1)}%</div><p>${s.totalHours.toFixed(1)} utilized hours against ${s.available.toFixed(1)} available lab hours. Idle capacity: ${s.idle.toFixed(1)} hours.</p></div>
+    <div class="card"><strong>Instrument Focus</strong><div class="card-num">${esc(topEquip?topEquip[0]:'--')}</div><p>${topEquip?`${Number(topEquip[1]).toFixed(1)} hours logged for the highest-demand instrument/category.`:'No instrument demand identified for this filter.'}</p></div>`;
+}
+function periodLabelText(){
+  const from=$("fromDateFilter").value,to=$("toDateFilter").value,month=$("monthFilter").value;
+  if(from||to) return `${from||'Start'} to ${to||'Latest'}`;
+  if(month!=="ALL"){const [y,m]=month.split("-"); const rec=allRecords.find(r=>r.year===y&&r.monthNum===m); return rec?`${rec.monthName} ${y}`:month;}
+  return "All data";
+}
 function metric(n,l,cls=""){return `<div class="metric ${cls}"><div class="num">${esc(n)}</div><div class="label">${esc(l)}</div></div>`}
 function bar(label,value,max,tail="h"){return `<div class="bar-row"><div>${esc(label)}</div><div class="bar"><span style="width:${Math.max(5,value/max*100)}%">${Number(value).toFixed(1)}${tail}</span></div><div class="right mono">${Math.round(value/max*100)}%</div></div>`}
 function renderMonthlyChart(){const rows={}; filteredRecords.forEach(r=>{const k=`${r.year}-${r.monthNum}`; if(!rows[k]) rows[k]={label:`${r.monthName} ${r.year}`,hours:0}; rows[k].hours+=Number(r.usageHours)||0;}); const arr=Object.values(rows).slice(-12); const max=Math.max(...arr.map(r=>r.hours),1); $("monthlyChart").innerHTML=arr.length?arr.map(r=>bar(r.label,r.hours,max)).join(""):'<p class="muted">No monthly data for current filters.</p>'}
@@ -189,9 +234,10 @@ function renderTable(){
   if(!filteredRecords.length){$("tableBody").innerHTML='<tr><td colspan="7">No sessions match current filters.</td></tr>';return;}
   $("tableBody").innerHTML=filteredRecords.map((r,i)=>`<tr><td class="mono">${i+1}</td><td>${esc(r.dateDisplay||r.sheetName||"-")}</td><td><span class="pill">${esc(r.startup||"-")}</span></td><td>${esc(r.repName||"-")}</td><td>${esc(r.equipment||"-")}</td><td>${esc(r.testedWhat||"-")}</td><td class="mono">${(Number(r.usageHours)||0).toFixed(2)} h</td></tr>`).join("");
 }
-["yearFilter","monthFilter","startupFilter"].forEach(id=>$(id).addEventListener("change",applyFilters));
+["yearFilter","startupFilter","fromDateFilter","toDateFilter"].forEach(id=>$(id).addEventListener("change",applyFilters));
+$("monthFilter").addEventListener("change",()=>{setDateRangeFromMonth();applyFilters();});
 ["equipFilter","tableSearch"].forEach(id=>$(id).addEventListener("input",applyFilters));
-$("resetBtn").addEventListener("click",()=>{$("yearFilter").value="ALL";$("monthFilter").value="ALL";$("startupFilter").value="ALL";$("equipFilter").value="";$("tableSearch").value="";applyFilters();});
+$("resetBtn").addEventListener("click",()=>{$("yearFilter").value="ALL";$("monthFilter").value="ALL";$("startupFilter").value="ALL";$("fromDateFilter").value="";$("toDateFilter").value="";$("equipFilter").value="";$("tableSearch").value="";applyFilters();});
 fetchData();
 </script>
 </body>
