@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Electronics Enabling Lab Utilization Intelligence | KLE-CTIE</title>
+<title>Electronics Enabling Lab (EEL) Utilization Intelligence | KLE-CTIE</title>
 <style>
 :root{
   --ink:#172033;--muted:#627089;--navy:#071c38;--blue:#0d5a91;--teal:#0f766e;
@@ -18,36 +18,37 @@ body{margin:0 0 42px;background:
   color:var(--ink);font-family:Arial,Helvetica,sans-serif}
 a{color:inherit;text-decoration:none}
 .topbar{height:64px;background:linear-gradient(90deg,#071c38,#0d345f 58%,#0b4d64);color:#fff;display:flex;align-items:center;justify-content:space-between;padding:0 28px;position:sticky;top:0;z-index:20;box-shadow:0 8px 26px rgba(6,22,44,.20)}
-.brand strong{display:block;font-size:15px}.brand span{display:block;font-size:11px;color:#c7d9ea;margin-top:2px}.lab-red{color:#e63946}.actions{display:flex;gap:8px;flex-wrap:wrap}.btn{border:1px solid rgba(255,255,255,.24);background:rgba(255,255,255,.10);color:#fff;border-radius:7px;padding:8px 11px;font-size:12px;font-weight:800;cursor:pointer}.btn.gold{background:linear-gradient(135deg,#f0bd4d,var(--gold));color:#11294d;border-color:#f0bd4d}
+.brand strong{display:block;font-size:15px}.brand>span{display:block;font-size:11px;color:#c7d9ea;margin-top:2px}.brand strong .lab-red{display:inline;font-size:inherit;margin-top:0}.lab-red{color:#e63946}.actions{display:flex;gap:8px;flex-wrap:wrap}.btn{border:1px solid rgba(255,255,255,.24);background:rgba(255,255,255,.10);color:#fff;border-radius:7px;padding:8px 11px;font-size:12px;font-weight:800;cursor:pointer}.btn.gold{background:linear-gradient(135deg,#f0bd4d,var(--gold));color:#11294d;border-color:#f0bd4d}
 .wrap{max-width:1240px;margin:0 auto;padding:24px}
 .hero{position:relative;min-height:430px;border-radius:12px;overflow:hidden;background:#071c38;box-shadow:var(--shadow);display:grid;grid-template-columns:1fr;align-items:center;margin-bottom:18px;isolation:isolate}
 .hero-slides{position:absolute;inset:0;z-index:0}.hero-slide{position:absolute;inset:0;background-size:cover;background-position:center;opacity:0;transform:scale(1);animation:heroCarousel 16s infinite}.hero-slide:nth-child(1){animation-delay:0s}.hero-slide:nth-child(2){animation-delay:8s}
 .hero:before{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(6,18,36,.93),rgba(8,31,53,.70) 48%,rgba(8,31,53,.16));z-index:1;pointer-events:none}
 .hero:after{content:"";position:absolute;inset:0;background:linear-gradient(120deg,transparent 0 45%,rgba(255,255,255,.10) 50%,transparent 56%);animation:scan 7s ease-in-out infinite;pointer-events:none;z-index:2}
-.summary{position:relative;z-index:3;padding:42px 34px 110px;color:#fff;text-align:center;max-width:980px;margin:0 auto}.eyebrow{font-size:12px;font-weight:900;letter-spacing:1.4px;text-transform:uppercase;color:#f3c45a;margin-bottom:10px}
-h1{margin:0;font-size:clamp(44px,7vw,86px);line-height:.96;letter-spacing:0}.summary h1 .lab-red{text-shadow:0 10px 34px rgba(0,0,0,.40)}.hero-subtitle{font-size:clamp(22px,3.2vw,40px);font-weight:900;margin-top:10px;color:#fff}.summary p{margin:16px auto 0;color:#d7e4f1;font-size:15px;line-height:1.65;max-width:760px}.deadline{display:inline-flex;margin-top:18px;background:#fff8e8;color:#785100;border:1px solid #f0d79d;border-radius:8px;padding:9px 10px;font-size:12px;font-weight:900}
+.summary{position:relative;z-index:3;padding:42px 34px 110px;color:#fff;text-align:center;max-width:1080px;margin:0 auto}.eyebrow{font-size:12px;font-weight:900;letter-spacing:1.4px;text-transform:uppercase;color:#f3c45a;margin-bottom:10px}
+h1{margin:0;font-size:clamp(36px,4.8vw,60px);line-height:1.04;letter-spacing:0}.title-stage{position:relative;display:inline-block;max-width:100%}.summary h1 .lab-red{display:inline-block;white-space:nowrap;text-shadow:0 10px 34px rgba(0,0,0,.40)}.hero-subtitle{font-size:clamp(22px,3.2vw,40px);font-weight:900;margin-top:10px;color:#fff}.summary p{margin:16px auto 0;color:#d7e4f1;font-size:15px;line-height:1.65;max-width:760px}.deadline{display:inline-flex;margin-top:18px;background:#fff8e8;color:#785100;border:1px solid #f0d79d;border-radius:8px;padding:9px 10px;font-size:12px;font-weight:900}
+.eel-bot{position:absolute;right:-54px;top:-23px;width:46px;height:58px;filter:drop-shadow(0 10px 16px rgba(0,0,0,.32));animation:botWalk 9s ease-in-out infinite;transform-origin:50% 100%;pointer-events:none}.bot-head{position:absolute;left:9px;top:4px;width:28px;height:22px;border:2px solid rgba(255,255,255,.9);border-radius:8px;background:linear-gradient(145deg,#d9f1ff,#7bb7d8)}.bot-head:before{content:"";position:absolute;left:12px;top:-8px;width:2px;height:8px;background:#d9f1ff}.bot-head:after{content:"";position:absolute;left:9px;top:-11px;width:8px;height:8px;border-radius:50%;background:#f0bd4d;box-shadow:0 0 12px #f0bd4d}.bot-eye{position:absolute;top:8px;width:4px;height:4px;border-radius:50%;background:#071c38;animation:botBlink 4.6s infinite}.bot-eye:first-child{left:7px}.bot-eye:last-child{right:7px}.bot-body{position:absolute;left:13px;top:29px;width:20px;height:22px;border-radius:6px;background:linear-gradient(160deg,#f4fbff,#8aaec6);border:2px solid rgba(255,255,255,.88)}.bot-body:before,.bot-body:after{content:"";position:absolute;top:8px;width:10px;height:2px;background:#d9f1ff}.bot-body:before{left:-10px;transform:rotate(23deg)}.bot-body:after{right:-10px;transform:rotate(-23deg)}.bot-thought{position:absolute;right:-7px;top:-8px;width:15px;height:15px;border-radius:50%;background:rgba(255,255,255,.88);opacity:0;animation:botThink 9s ease-in-out infinite}.bot-thought:before,.bot-thought:after{content:"";position:absolute;border-radius:50%;background:rgba(255,255,255,.82)}.bot-thought:before{width:6px;height:6px;left:-7px;top:13px}.bot-thought:after{width:4px;height:4px;left:-13px;top:20px}.bot-spark{position:absolute;left:0;top:22px;width:15px;height:15px;opacity:0;animation:botSpark 9s steps(1,end) infinite}.bot-spark:before,.bot-spark:after{content:"";position:absolute;left:6px;top:0;width:3px;height:15px;background:#f0bd4d;box-shadow:0 0 10px #f0bd4d}.bot-spark:after{transform:rotate(90deg)}.bot-fume{position:absolute;right:2px;top:2px;width:18px;height:18px;border-radius:50%;border:3px solid rgba(210,220,226,.75);opacity:0;animation:botFume 9s ease-out infinite}
 .hero-panel{position:absolute;z-index:3;left:50%;bottom:22px;transform:translateX(-50%);display:flex;gap:22px;align-items:center;justify-content:center;background:rgba(255,255,255,.93);backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,.65);border-radius:10px;padding:14px 18px;box-shadow:var(--shadow);min-width:min(720px,calc(100% - 44px))}.hero-panel .label{font-size:10px;text-transform:uppercase;letter-spacing:.75px;color:var(--muted);font-weight:900}.hero-panel .value{font-size:18px;font-weight:900;color:#102b50;margin:2px 0}.hero-panel a{display:inline-flex;color:#0d5a91;font-size:12px;font-weight:900;white-space:nowrap}
 .filters,.section,.card{background:rgba(255,255,255,.96);border:1px solid rgba(216,225,236,.95);border-radius:10px;box-shadow:0 6px 18px rgba(23,32,51,.07)}
-.filters{display:grid;grid-template-columns:1fr 1fr 1fr 1fr 1fr 1fr auto;gap:12px;padding:15px;margin-bottom:18px}.field label{display:block;font-size:10px;text-transform:uppercase;letter-spacing:.55px;color:var(--muted);font-weight:900;margin-bottom:6px}.field input,.field select{width:100%;border:1px solid var(--line);border-radius:8px;padding:10px;font:inherit;font-size:13px;background:#fff}.reset{align-self:end;background:#102b50;color:#fff;border:0;border-radius:8px;padding:11px 14px;font-weight:900;cursor:pointer}
+.filters{display:grid;grid-template-columns:1fr 1fr 1fr 1fr 1fr 1fr auto;gap:12px;padding:15px;margin-bottom:18px}.field label{display:block;font-size:10px;text-transform:uppercase;letter-spacing:.55px;color:var(--muted);font-weight:900;margin-bottom:6px}.field input,.field select{width:100%;border:1px solid var(--line);border-radius:8px;padding:10px;font:inherit;font-size:13px;background:#fff}.date-note{display:block;margin-top:5px;color:#0d5a91;font-size:11px;font-weight:800;min-height:14px}.date-range-status{grid-column:1/-1;margin-top:-2px;color:#102b50;font-size:12px;font-weight:900}.reset{align-self:end;background:#102b50;color:#fff;border:0;border-radius:8px;padding:11px 14px;font-weight:900;cursor:pointer}
 .metrics{display:grid;grid-template-columns:repeat(6,1fr);gap:12px;margin-bottom:18px}.metric{position:relative;min-height:96px;background:linear-gradient(180deg,#fff,#f9fbfd);border:1px solid var(--line);border-radius:10px;padding:16px;box-shadow:0 6px 18px rgba(23,32,51,.07);overflow:hidden}.metric:before{content:"";position:absolute;inset:0 0 auto;height:4px;background:linear-gradient(90deg,var(--blue),var(--teal),var(--gold))}.metric .num{font-size:28px;font-weight:900;color:#102b50}.metric .label{font-size:10px;line-height:1.35;text-transform:uppercase;letter-spacing:.6px;color:var(--muted);margin-top:9px}.metric.green .num{color:var(--green)}.metric.amber .num{color:var(--amber)}.metric.red .num{color:var(--red)}
-.bridge{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:18px}.card{padding:15px;overflow:hidden;min-height:118px}.card strong{display:block;color:#102b50;margin-bottom:6px}.card p{margin:0;color:var(--muted);font-size:12px;line-height:1.5}.card .card-num{font-size:24px;font-weight:900;color:#102b50;margin-bottom:5px}.visual-card{background:url("assets/ee-lab-utilization-insights-v2.png") center/cover no-repeat;min-height:140px;position:relative}.visual-card:before{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(7,28,56,.78),rgba(7,28,56,.18))}.visual-card strong,.visual-card p,.visual-card .card-num{position:relative;color:#fff}.visual-card p{color:#d9e6f1}
+.bridge{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:18px}.card{padding:15px;overflow:hidden;min-height:118px}.card strong{display:block;color:#102b50;margin-bottom:6px}.card p{margin:0;color:var(--muted);font-size:12px;line-height:1.5}.card .card-num{font-size:24px;font-weight:900;color:#102b50;margin-bottom:5px}.visual-card{min-height:140px;position:relative;background-position:center;background-size:cover;background-repeat:no-repeat}.review-card{background-image:url("assets/ee-lab-utilization-insights-v2.png")}.capacity-card{background-image:url("assets/capacity-signal-card-v1.png")}.instrument-card{background-image:url("assets/instrument-focus-card-v1.png")}.visual-card:before{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(7,28,56,.84),rgba(7,28,56,.38) 58%,rgba(7,28,56,.12))}.visual-card strong,.visual-card p,.visual-card .card-num{position:relative;color:#fff}.visual-card p{color:#e7f0f8}
 .grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px}.section{padding:18px;margin-bottom:16px}.section h2{font-size:14px;text-transform:uppercase;letter-spacing:.55px;color:#102b50;margin:0 0 14px;display:flex;justify-content:space-between;gap:12px}.section h2 small{font-size:11px;color:var(--muted);letter-spacing:0;text-transform:none}
 .bar-row{display:grid;grid-template-columns:minmax(130px,.55fr) 1fr 58px;gap:10px;align-items:center;margin:10px 0;font-size:12px}.bar{height:26px;background:#e7edf5;border-radius:999px;overflow:hidden}.bar span{height:100%;display:flex;align-items:center;justify-content:flex-end;padding-right:8px;color:#fff;font-size:11px;font-weight:900;background:linear-gradient(90deg,var(--blue),var(--teal),var(--gold));min-width:24px;transition:width .7s ease}.right{text-align:right}.mono{font-family:Consolas,"Courier New",monospace}.muted{color:var(--muted)}
 .table-tools{display:flex;gap:10px;align-items:center;justify-content:space-between;margin-bottom:12px}.search{border:1px solid var(--line);border-radius:8px;padding:10px 11px;min-width:260px;font-size:13px}.table-box{max-height:520px;overflow:auto;border:1px solid var(--line);border-radius:8px}table{width:100%;border-collapse:separate;border-spacing:0;font-size:12px;background:#fff}th{text-align:left;color:#d9e6f1;background:#102b50;text-transform:uppercase;letter-spacing:.45px;font-size:10px;padding:10px;position:sticky;top:0}td{padding:10px;border-bottom:1px solid var(--line);vertical-align:top}tr:hover td{background:#f9fcff}.pill{display:inline-flex;border-radius:999px;background:#edf3f8;color:#24415e;padding:4px 8px;font-size:11px;font-weight:800}.footer{position:fixed;left:0;right:0;bottom:0;height:38px;background:rgba(7,28,56,.94);color:#d8e7f4;display:flex;align-items:center;justify-content:center;gap:6px;font-size:11px;z-index:30}.heart{color:#e63946;animation:heart 1.15s ease-in-out infinite}
 .sync-line{position:fixed;left:0;right:0;top:0;height:3px;background:linear-gradient(90deg,var(--gold),var(--teal),var(--blue));z-index:80;transform:scaleX(0);transform-origin:left;opacity:0;transition:opacity .2s ease,transform .35s ease}.sync-line.active{opacity:1;animation:syncLine 1.45s ease-in-out infinite}.sync-line.done{opacity:1;transform:scaleX(1)}
 .sync-toast{position:fixed;right:22px;bottom:54px;z-index:70;display:flex;align-items:center;gap:10px;background:rgba(255,255,255,.96);border:1px solid rgba(216,225,236,.95);border-radius:10px;box-shadow:0 16px 34px rgba(23,32,51,.14);padding:12px 14px;min-width:260px;transform:translateY(16px);opacity:0;pointer-events:none;transition:opacity .22s ease,transform .22s ease}.sync-toast.active,.sync-toast.done,.sync-toast.error{opacity:1;transform:translateY(0)}.sync-toast .sync-icon{width:30px;height:30px;border-radius:50%;border:3px solid #e4edf5;border-top-color:var(--teal);animation:spin .8s linear infinite}.sync-toast.done .sync-icon{border:0;background:#e5f5ec;position:relative;animation:none}.sync-toast.done .sync-icon:after{content:"";position:absolute;left:9px;top:7px;width:8px;height:13px;border:solid var(--green);border-width:0 3px 3px 0;transform:rotate(45deg)}.sync-toast.error .sync-icon{border:0;background:#fae8e8;animation:none}.sync-toast.error .sync-icon:after{content:"!";display:grid;place-items:center;height:100%;color:var(--red);font-weight:900}.sync-copy strong{display:block;font-size:12px;color:#102b50}.sync-copy span{display:block;margin-top:2px;font-size:11px;color:var(--muted)}
 .skeleton-card{height:96px;border-radius:10px;background:linear-gradient(110deg,#e9f0f7 8%,#f8fbfd 18%,#e9f0f7 33%);background-size:200% 100%;animation:shimmer 1.35s linear infinite}.skeleton-bar{height:26px;border-radius:999px;background:linear-gradient(110deg,#e9f0f7 8%,#f8fbfd 18%,#e9f0f7 33%);background-size:200% 100%;animation:shimmer 1.35s linear infinite;margin:10px 0}
-@keyframes scan{0%,58%{transform:translateX(-120%)}74%,100%{transform:translateX(120%)}}@keyframes heroCarousel{0%,42%{opacity:1;transform:scale(1)}50%,100%{opacity:0;transform:scale(1.035)}}@keyframes heart{0%,100%{transform:scale(1)}20%{transform:scale(1.28)}40%{transform:scale(.95)}55%{transform:scale(1.12)}}@keyframes spin{to{transform:rotate(360deg)}}@keyframes shimmer{to{background-position:-200% 0}}@keyframes syncLine{0%{transform:scaleX(.08) translateX(-20%)}50%{transform:scaleX(.58) translateX(60%)}100%{transform:scaleX(.08) translateX(122%)}}
+@keyframes scan{0%,58%{transform:translateX(-120%)}74%,100%{transform:translateX(120%)}}@keyframes heroCarousel{0%,42%{opacity:1;transform:scale(1)}50%,100%{opacity:0;transform:scale(1.035)}}@keyframes heart{0%,100%{transform:scale(1)}20%{transform:scale(1.28)}40%{transform:scale(.95)}55%{transform:scale(1.12)}}@keyframes spin{to{transform:rotate(360deg)}}@keyframes shimmer{to{background-position:-200% 0}}@keyframes syncLine{0%{transform:scaleX(.08) translateX(-20%)}50%{transform:scaleX(.58) translateX(60%)}100%{transform:scaleX(.08) translateX(122%)}}@keyframes botWalk{0%,100%{transform:translateX(0) rotate(0)}12%{transform:translateX(-16px) rotate(-5deg)}25%{transform:translateX(2px) rotate(3deg)}48%{transform:translateX(-26px) rotate(-3deg)}62%{transform:translateX(-8px) rotate(2deg)}80%{transform:translateX(-18px) rotate(-2deg)}}@keyframes botBlink{0%,92%,100%{transform:scaleY(1)}94%,96%{transform:scaleY(.18)}}@keyframes botThink{0%,18%,100%{opacity:0;transform:translateY(4px) scale(.7)}24%,39%{opacity:1;transform:translateY(0) scale(1)}}@keyframes botSpark{0%,57%,64%,100%{opacity:0;transform:rotate(0) scale(.7)}58%,60%,62%{opacity:1;transform:rotate(22deg) scale(1.05)}}@keyframes botFume{0%,63%,100%{opacity:0;transform:translate(0,0) scale(.4)}66%{opacity:.85;transform:translate(10px,-10px) scale(1)}76%{opacity:0;transform:translate(18px,-22px) scale(1.9)}}
 @media (prefers-reduced-motion:reduce){*,*:before,*:after{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
 @media(max-width:1050px){.grid2,.bridge{grid-template-columns:1fr}.metrics{grid-template-columns:repeat(3,1fr)}.filters{grid-template-columns:repeat(2,1fr)}.hero-panel{flex-direction:column;gap:8px;text-align:center}}
-@media(max-width:640px){.wrap{padding:16px}.topbar{padding:0 14px}.actions{display:none}.hero{min-height:500px}.summary{padding:34px 20px 160px}.summary h1{font-size:44px}.hero-subtitle{font-size:24px}.metrics{grid-template-columns:repeat(2,1fr)}.filters{grid-template-columns:1fr}.bar-row{grid-template-columns:1fr}.right{text-align:left}.search{min-width:0;width:100%}}
+@media(max-width:640px){.wrap{padding:16px}.topbar{padding:0 14px}.actions{display:none}.hero{min-height:500px}.summary{padding:34px 20px 160px}.summary h1{font-size:38px}.summary h1 .lab-red{white-space:normal}.title-stage{padding-right:0}.eel-bot{right:8px;top:-48px;transform:scale(.82)}.hero-subtitle{font-size:24px}.metrics{grid-template-columns:repeat(2,1fr)}.filters{grid-template-columns:1fr}.bar-row{grid-template-columns:1fr}.right{text-align:left}.search{min-width:0;width:100%}}
 </style>
 </head>
 <body>
 <div class="sync-line" id="sync-line"></div>
 <div class="sync-toast" id="sync-toast"><div class="sync-icon"></div><div class="sync-copy"><strong id="sync-title">Updating utilization view</strong><span id="sync-detail">Refreshing dashboard records...</span></div></div>
 <header class="topbar">
-  <div class="brand"><strong><span class="lab-red">Electronics Enabling Lab</span> Utilization Intelligence</strong><span>KLE-CTIE instrument usage, capacity and stakeholder analytics</span></div>
+  <div class="brand"><strong><span class="lab-red">Electronics Enabling Lab (EEL)</span> Utilization Intelligence</strong><span>KLE-CTIE instrument usage, capacity and stakeholder analytics</span></div>
   <div class="actions">
     <a class="btn" href="https://rhchheda.github.io/EE-Lab-Report-Builder/dashboard.html">Progress Review Portal</a>
     <button class="btn gold" onclick="fetchData()">Refresh</button>
@@ -61,7 +62,16 @@ h1{margin:0;font-size:clamp(44px,7vw,86px);line-height:.96;letter-spacing:0}.sum
     </div>
     <div class="summary">
       <div class="eyebrow">KLE-CTIE</div>
-      <h1><span class="lab-red">Electronics Enabling Lab</span></h1>
+      <div class="title-stage">
+        <h1><span class="lab-red">Electronics Enabling Lab (EEL)</span></h1>
+        <div class="eel-bot" aria-hidden="true">
+          <div class="bot-head"><span class="bot-eye"></span><span class="bot-eye"></span></div>
+          <div class="bot-body"></div>
+          <div class="bot-thought"></div>
+          <div class="bot-spark"></div>
+          <div class="bot-fume"></div>
+        </div>
+      </div>
       <div class="hero-subtitle">Utilization Intelligence</div>
       <p>Consolidated view of lab usage, instrument demand, utilization hours and available capacity for structured internal review and periodic authority reporting.</p>
       <div class="deadline">Lab hours: Mon-Fri 10:00 AM-6:00 PM · Saturday 10:00 AM-2:00 PM</div>
@@ -77,19 +87,20 @@ h1{margin:0;font-size:clamp(44px,7vw,86px);line-height:.96;letter-spacing:0}.sum
   <section class="filters">
     <div class="field"><label>Year</label><select id="yearFilter"></select></div>
     <div class="field"><label>Month quick filter</label><select id="monthFilter"></select></div>
-    <div class="field"><label>From date</label><input id="fromDateFilter" type="text" placeholder="DD-MMM-YYYY"></div>
-    <div class="field"><label>To date</label><input id="toDateFilter" type="text" placeholder="DD-MMM-YYYY"></div>
+    <div class="field"><label>From date</label><input id="fromDateFilter" type="date"><span class="date-note" id="fromDateDisplay"></span></div>
+    <div class="field"><label>To date</label><input id="toDateFilter" type="date"><span class="date-note" id="toDateDisplay"></span></div>
     <div class="field"><label>Startup</label><select id="startupFilter"></select></div>
     <div class="field"><label>Equipment</label><input id="equipFilter" placeholder="DSO, MSO, PSU"></div>
     <button class="reset" id="resetBtn">Reset</button>
+    <div class="date-range-status" id="dateRangeStatus">Review period: All data</div>
   </section>
 
   <section class="metrics" id="kpiGrid"></section>
 
   <section class="bridge" id="insightCards">
-    <div class="card visual-card"><strong>Instrumentation-Led Review</strong><p>Usage data is framed around lab instruments, demand concentration and productive capacity.</p></div>
-    <div class="card"><strong>Capacity Signal</strong><p>Loading utilization status...</p></div>
-    <div class="card"><strong>Instrument Focus</strong><p>Loading instrument demand...</p></div>
+    <div class="card visual-card review-card"><strong>Instrumentation-Led Review</strong><p>Usage data is framed around lab instruments, demand concentration and productive capacity.</p></div>
+    <div class="card visual-card capacity-card"><strong>Capacity Signal</strong><p>Loading utilization status...</p></div>
+    <div class="card visual-card instrument-card"><strong>Instrument Focus</strong><p>Loading instrument demand...</p></div>
   </section>
 
   <section class="grid2">
@@ -132,6 +143,12 @@ function parseDisplayDate(value){
   if(month<0) return "";
   const date=new Date(Number(match[3]),month,Number(match[1]));
   return isoDate(date);
+}
+function updateDateRangeStatus(){
+  const from=parseDisplayDate($("fromDateFilter").value),to=parseDisplayDate($("toDateFilter").value);
+  $("fromDateDisplay").textContent=from?fmtDate(from):"";
+  $("toDateDisplay").textContent=to?fmtDate(to):"";
+  $("dateRangeStatus").textContent=`Review period: ${from?fmtDate(from):"Start"} to ${to?fmtDate(to):"Latest"}`;
 }
 function setSyncState(state,title,detail){
   const line=$("sync-line"),toast=$("sync-toast");
@@ -179,9 +196,10 @@ function populateFilters(){
   $("startupFilter").innerHTML='<option value="ALL">All Startups</option>'+startups.map(s=>`<option value="${esc(s)}">${esc(s)}</option>`).join("");
   const dated=allRecords.map(recordDateValue).filter(Boolean).sort();
   if(dated.length && !$("fromDateFilter").value && !$("toDateFilter").value){
-    $("fromDateFilter").value=fmtDate(dated[0]);
-    $("toDateFilter").value=fmtDate(dated[dated.length-1]);
+    $("fromDateFilter").value=dated[0];
+    $("toDateFilter").value=dated[dated.length-1];
   }
+  updateDateRangeStatus();
 }
 function recordDateValue(record){
   if(!record?.date) return "";
@@ -194,11 +212,13 @@ function setDateRangeFromMonth(){
   const [year,monthNum]=month.split("-");
   const start=new Date(Number(year),Number(monthNum)-1,1);
   const end=new Date(Number(year),Number(monthNum),0);
-  $("fromDateFilter").value=fmtDate(start);
-  $("toDateFilter").value=fmtDate(end);
+  $("fromDateFilter").value=isoDate(start);
+  $("toDateFilter").value=isoDate(end);
+  updateDateRangeStatus();
 }
 function applyFilters(){
   const year=$("yearFilter").value,month=$("monthFilter").value,startup=$("startupFilter").value,equip=$("equipFilter").value.toLowerCase(),search=$("tableSearch").value.toLowerCase(),from=parseDisplayDate($("fromDateFilter").value),to=parseDisplayDate($("toDateFilter").value);
+  updateDateRangeStatus();
   filteredRecords=allRecords.filter(r=>{
     if(year!=="ALL"&&r.year!==year) return false;
     const recordDate=recordDateValue(r);
@@ -233,9 +253,9 @@ function renderInsightCards(){
   const topEquip=Object.entries(equipmentTotals).sort((a,b)=>b[1]-a[1])[0];
   const periodLabel=periodLabelText();
   $("insightCards").innerHTML=`
-    <div class="card visual-card"><strong>Review Period</strong><div class="card-num">${esc(periodLabel)}</div><p>${filteredRecords.length} utilization sessions are included in the current view.</p></div>
-    <div class="card"><strong>Capacity Signal</strong><div class="card-num">${s.pct.toFixed(1)}%</div><p>${s.totalHours.toFixed(1)} utilized hours against ${s.available.toFixed(1)} available lab hours. Idle capacity: ${s.idle.toFixed(1)} hours.</p></div>
-    <div class="card"><strong>Instrument Focus</strong><div class="card-num">${esc(topEquip?topEquip[0]:'--')}</div><p>${topEquip?`${Number(topEquip[1]).toFixed(1)} hours logged for the highest-demand instrument/category.`:'No instrument demand identified for this filter.'}</p></div>`;
+    <div class="card visual-card review-card"><strong>Review Period</strong><div class="card-num">${esc(periodLabel)}</div><p>${filteredRecords.length} utilization sessions are included in the current view.</p></div>
+    <div class="card visual-card capacity-card"><strong>Capacity Signal</strong><div class="card-num">${s.pct.toFixed(1)}%</div><p>${s.totalHours.toFixed(1)} utilized hours against ${s.available.toFixed(1)} available lab hours. Idle capacity: ${s.idle.toFixed(1)} hours.</p></div>
+    <div class="card visual-card instrument-card"><strong>Instrument Focus</strong><div class="card-num">${esc(topEquip?topEquip[0]:'--')}</div><p>${topEquip?`${Number(topEquip[1]).toFixed(1)} hours logged for the highest-demand instrument/category.`:'No instrument demand identified for this filter.'}</p></div>`;
 }
 function periodLabelText(){
   const from=parseDisplayDate($("fromDateFilter").value),to=parseDisplayDate($("toDateFilter").value),month=$("monthFilter").value;
@@ -256,9 +276,10 @@ function renderTable(){
   $("tableBody").innerHTML=filteredRecords.map((r,i)=>`<tr><td class="mono">${i+1}</td><td>${esc(recordDateValue(r)?fmtDate(recordDateValue(r)):(r.sheetName||"-"))}</td><td><span class="pill">${esc(r.startup||"-")}</span></td><td>${esc(r.repName||"-")}</td><td>${esc(r.equipment||"-")}</td><td>${esc(r.testedWhat||"-")}</td><td class="mono">${(Number(r.usageHours)||0).toFixed(2)} h</td></tr>`).join("");
 }
 ["yearFilter","startupFilter","fromDateFilter","toDateFilter"].forEach(id=>$(id).addEventListener("change",applyFilters));
+["fromDateFilter","toDateFilter"].forEach(id=>$(id).addEventListener("input",applyFilters));
 $("monthFilter").addEventListener("change",()=>{setDateRangeFromMonth();applyFilters();});
 ["equipFilter","tableSearch"].forEach(id=>$(id).addEventListener("input",applyFilters));
-$("resetBtn").addEventListener("click",()=>{$("yearFilter").value="ALL";$("monthFilter").value="ALL";$("startupFilter").value="ALL";$("fromDateFilter").value="";$("toDateFilter").value="";$("equipFilter").value="";$("tableSearch").value="";applyFilters();});
+$("resetBtn").addEventListener("click",()=>{$("yearFilter").value="ALL";$("monthFilter").value="ALL";$("startupFilter").value="ALL";$("fromDateFilter").value="";$("toDateFilter").value="";$("equipFilter").value="";$("tableSearch").value="";updateDateRangeStatus();applyFilters();});
 fetchData();
 </script>
 </body>
